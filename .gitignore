@@ -74,7 +74,7 @@ pids
 
 # Operating System Files
 Thumbs.db
-.DS_Store
+
 *.pem
 desktop.ini
 
@@ -94,7 +94,7 @@ desktop.ini
 !.yarn/versions
 
 # dotenv environment variable files
-.env
+
 .env.*
 !.env.example
 
