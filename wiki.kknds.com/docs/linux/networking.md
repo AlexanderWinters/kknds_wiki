@@ -85,7 +85,7 @@ You might need to add the SSH fingerprint.
 
 `networkctl list` - show interfaces
 
-## Force close ports
+### Force close ports
 
 ```bash
 nmap [host] #to see if/what ports are open
@@ -95,7 +95,7 @@ fuser [port]/tcp
 
 Add flag -k to fuser to kill the task as well (needs root)
 
-## Static IP Config (requires systemd-networkd)
+### Static IP Config (requires systemd-networkd)
 
 ```ini
 # /etc/systemd/network/20-wired.network
@@ -108,7 +108,7 @@ Gateway=10.1.10.1
 DNS=10.1.10.1
 ```
 
-## Renaming an interface (requires systemd-networkd)
+### Renaming an interface (requires systemd-networkd)
 
 A .link file can be used to rename an interface. A useful example is to set a predictable interface name for a USB-to-Ethernet adapter based on its MAC address, as those adapters are usually given different names depending on which USB port they are plugged into.
 
@@ -123,9 +123,9 @@ Name=ethusb0
 ```
 
 
-# Firewall
+## Firewall
 
-## Back-end
+### Back-end
 
 nftables is on it's way to replace iptables. For that, I decided to replace iptables with nftables already. As of now, Archlinux comes with both installed but is using iptables. Usually just stop/disabling iptables and enable/starting nftables is good enough.
 
@@ -153,10 +153,49 @@ Nftables already comes with some basic rules. To clear the ruleset:
 nft flush ruleset
 ```
 
-## Front-end
+### Front-end
 
 These are the firewalls that support nftables:
 
 - ufw
 - firewalld
 - nft-blackhole
+
+
+## CIDR Cheatsheet
+
+|     |     |     |     |     |     |
+| --- | --- | --- | --- | --- | --- |
+| **Prefix** | **\# of former class C networks** | **Potential Hosts** | **Actual Hosts** | **Netmask** | **\# of subnets** |
+| /31 | 1/128 | 2   | 0   | 255.255.255.254 | 128 |
+| /30 | 1/64 | 4   | 2   | 255.255.255.252 | 64  |
+| /29 | 1/32 | 8   | 6   | 255.255.255.248 | 32  |
+| /28 | 1/16 | 16  | 14  | 255.255.255.240 | 16  |
+| /27 | 1/8 | 32  | 30  | 255.255.255.224 | 8   |
+| /26 | 1/4 | 64  | 62  | 255.255.255.192 | 4   |
+| /25 | 1/2 | 128 | 126 | 255.255.255.128 | 2   |
+| /24 | 1   | 256 | 254 | 255.255.255.0 | 1   |
+| /23 | 2   | 512 | 510 | 255.255.254.0 | 128 |
+| /22 | 4   | 1,024 | 1,022 | 255.255.252.0 | 64  |
+| /21 | 8   | 2,048 | 2,046 | 255.255.248.0 | 32  |
+| /20 | 16  | 4,096 | 4,094 | 255.255.240.0 | 16  |
+| /19 | 32  | 8,192 | 8,190 | 255.255.224.0 | 8   |
+| /18 | 64  | 16,384 | 16,382 | 255.255.192.0 | 4   |
+| /17 | 128 | 32,768 | 32,766 | 255.255.128.0 | 2   |
+| /16 | 256 = 1 class B network | 65,536 | 65,534 | 255.255.0.0 | 1   |
+| /15 | 512 = 2 B networks | 131,072 | 131,070 | 255.254.0.0 | 128 |
+| /14 | 1,024 = 4 B networks | 262,144 | 262,142 | 255.252.0.0 | 64  |
+| /13 | 2,048 = 8 B networks | 524,288 | 524,286 | 255.248.0.0 | 32  |
+| /12 | 4,096 = 16 B networks | 1,048,576 | 1,048,574 | 255.240.0.0 | 16  |
+| /11 | 8,192 = 32 B networks | 2,097,152 | 2,097,150 | 255.224.0.0 | 8   |
+| /10 | 16,384 = 64 B networks | 4,194,304 | 4,194,302 | 255.192.0.0 | 4   |
+| /9  | 32,768 = 128 B networks | 8,388,608 | 8,388,606 | 255.128.0.0 | 2   |
+| /8  | 65,536 = 256 B/1 A network | 16,777,216 | 16,777,214 | 255.0.0.0 | 1   |
+| /7  | 131,072 = 2 A networks | 33,554,432 | 33,554,430 | 254.0.0.0 | 128 |
+| /6  | 262,144 = 4 A networks | 67,108,864 | 67,108,862 | 252.0.0.0 | 64  |
+| /5  | 524,888 = 8 A networks | 134,217,728 | 134,217,726 | 248.0.0.0 | 32  |
+| /4  | 1,048,576 = 16 A networks | 268,435,456 | 268,435,454 | 240.0.0.0 | 16  |
+| /3  | 2,097,152 = 32 A networks | 536,870,912 | 536,870,910 | 224.0.0.0 | 8   |
+| /2  | 4,194,304 = 64 A networks | 1,073,741,824 | 1,073,741,822 | 192.0.0.0 | 4   |
+| /1  | 8,388,608 = 128 A networks | 2,147,483,648 | 2,147,483,646 | 128.0.0.0 | 2   |
+| /0  | 16,777,216 = 256 A networks | 4,294,967,296 | 4,294,967,294 | 0.0.0.0 | 1   |

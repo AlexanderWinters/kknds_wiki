@@ -1,6 +1,3 @@
----
-sidebar_position: 3
----
 
 # Development
 I will look through tools that I use for softdev. 
@@ -31,9 +28,9 @@ deactivate
 There is also [Flask](https://flask.palletsprojects.com/en/stable/), [Django](https://docs.djangoproject.com/en/5.1/), and [FastAPI](https://fastapi.tiangolo.com/)
 
 # GIT
-
+:::info
 As of 2025, February the 2nd, Git has a market share of 87.53%. It's probably the most used tool in all of the tech industry (maybe even outside). Here are some advanced concepts that make working with GIT 10x better.
-
+:::
 ## GIT History
 
 `git log` is a list of all the commits in a repo, but it's a bit hard to read. To make it look a little nicer:
