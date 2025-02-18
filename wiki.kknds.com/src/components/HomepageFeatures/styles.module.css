@@ -9,3 +9,14 @@
   height: 200px;
   width: 200px;
 }
+
+.warning {
+  background-color: #ffdfcd;
+  color: #856404;
+  padding: 1rem;
+  border: 1px solid #ffeeba;
+  border-radius: 0.25rem;
+  margin: 1rem 0;
+  text-align: left;
+}
+

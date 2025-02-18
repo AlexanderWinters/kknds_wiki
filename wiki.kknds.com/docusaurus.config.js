@@ -11,7 +11,7 @@ import {themes as prismThemes} from 'prism-react-renderer';
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: 'KKNDS Wiki',
-  tagline: 'Dinosaurs are cool',
+  tagline: 'guides, info, and recipes',
   favicon: 'img/favicon.ico',
 
   // Set the production url of your site here
@@ -86,7 +86,7 @@ const config = {
             type: 'docSidebar',
             sidebarId: 'tutorialSidebar',
             position: 'left',
-            label: 'Tutorial',
+            label: 'Documentation',
           },
           //{to: '/blog', label: 'Ass', position: 'left'},
           {
@@ -103,7 +103,7 @@ const config = {
             title: 'Docs',
             items: [
               {
-                label: 'Tutorial',
+                label: 'Documentation',
                 to: '/docs/intro',
               },
             ],
