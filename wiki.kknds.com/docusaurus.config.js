@@ -12,7 +12,7 @@ import {themes as prismThemes} from 'prism-react-renderer';
 const config = {
   title: 'KKNDS Wiki',
   tagline: 'guides, info, and recipes',
-  favicon: 'img/favicon.ico',
+  favicon: 'img/white_logo.ico',
 
   // Set the production url of your site here
   url: 'https://wiki.kknds.com',
@@ -79,7 +79,7 @@ const config = {
         title: 'KKNDS Wiki',
         logo: {
           alt: 'KKNDS Logo',
-          src: 'img/logo.svg',
+          src: 'img/white_logo.svg',
         },
         items: [
           {
@@ -98,43 +98,9 @@ const config = {
       },
       footer: {
         style: 'dark',
-        links: [
-          {
-            title: 'Docs',
-            items: [
-              {
-                label: 'Documentation',
-                to: '/docs/intro',
-              },
-            ],
-          },
-          {
-            title: 'Social',
-            items: [
-              {
-                label: 'Linkedin',
-                href: 'https://www.linkedin.com/in/alexandros-kokkinidis/',
-              },
-              {
-                label: 'Github',
-                href: 'https://github.com/AlexanderWinters',
-              },
+        copyright: `Copyright © ${new Date().getFullYear()} kknds.com`,
 
-            ],
-          },
-          {
-            title: ' ',
-            items: [
-              {
-                label: `© ${new Date().getFullYear()} kknds.com`
-                ,
-                to: '#',
-              },
-            ],
 
-          },
-
-        ],
         //copyright: `Copyright © ${new Date().getFullYear()} kknds.com`,
       },
       prism: {
