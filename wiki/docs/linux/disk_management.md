@@ -33,7 +33,9 @@ Then fdisk starts and you will have a new prompt. For most cases:
 
 ## Formatting
 
-> **Warning**: Formatting deletes everything on your disk!
+:::warning
+Formatting deletes everything on your disk!
+:::
 
 `lsblk` Will show all the drives on the computer. Find the partition you want to format and memorize the path. I'll use /dev/sda1 for this example.
 
