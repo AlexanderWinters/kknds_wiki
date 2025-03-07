@@ -337,14 +337,45 @@ You can check the public id of your key by:
 gpg -K
 ```
 
-By default, gpg keys expire, but you change that by editing your key. Copy the id of your key and run:
+To access and edit the key, copy the ID and:
 
 ```bash
 gpg --edit-key <key_public_id>
 ```
 
-and then, in the gpg prompt run: ```expire```
+You can also access the key with your email:
+```bash
+gpg --edit-key my-email@example.com
+```
+By default, gpg keys expire, but you change that by editing your key and then, in the gpg prompt run ```expire``` and follow the prompt.
 
+If you want to change the password of your key, enter again the edit-key menu, run `passwd` and again, follow the prompt.
+
+You can find additional commands in the edit-key menu by running `help`.
+
+When moving your key to different machine, remember that you need both your private and public keys. This especially needed with Password Store since it uses
+your gpg keys to encrypt your password. 
+
+Create a temp folder:
+```bash
+mkdir exported_keys
+cd exported_keys
+```
+Create an export of your public key:
+```bash
+gpg --output --public.gpg --armor --export my-email@example.com
+```
+
+Create an export of your private key as well. You will be prompted to type your key password:
+```bash
+gpg --output --private.gpg --armor --export-secret-key my-email@example.com
+```
+
+Transfer the files via `scp` to the other machine. `cd` to that folder and import the keys. Start with the private one:
+`gpg --import private.gpg` enter your key password, and then import the public key: `gpg --import public.gpg`
+
+
+Finally, you will need to max the trust level of the public key for it to work properly. Edit the key, run `trust` and select `5` in the trust prompt. 
 ## Background Processes and 'Hang Ups'
 
 Running processes as background in bash is done by adding the ampersand `&` symbol at the end of a command. You can investigate the active background jobs by:
