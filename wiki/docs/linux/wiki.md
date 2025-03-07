@@ -6,7 +6,7 @@ sidebar_position: 1
 
 ## Installing/Updating
 
-To get started, rip the .iso and boot. Make sure all the settings in BIOS force UEFI boot (hardware needs to be compatible as well). You might need a hardwired internet connection. Run:
+To get started, just rip the .iso and boot. Make sure all the settings in BIOS force UEFI boot (hardware needs to be compatible as well). You might need a hardwired internet connection. Run:
 
 ```bash
 pacman -S archinstall
