@@ -1,3 +1,4 @@
+from webhook.app import WEBHOOK_SECRET
 
 # Development
 I will look through tools that I use for softdev. 
@@ -199,3 +200,79 @@ git push --mirror  <dest-repo-url>
 ```
 
 The mirror in not readable so it can be deleted after pushing.
+
+## CI/CD
+
+CI/CD stands for continuous intergration and continuous development. It's a set of practices and tools
+used to automate building, testing, and deploying. There are several tools out there that help coordinate
+and automate builds, but I will focus on two methods/tools I use for CI/CD - webhooks, and Jenkins. 
+
+### Webhooks
+When it comes to updating text on a web server the simplest thing would be to use git and GitHub webhooks.
+You can use any simple web framework to create a webhook server; I use Flask, which is in python:
+```python
+from flask import Flask, request
+import subprocess
+
+app = Flask(__name__)
+
+
+@app.route('/webhook', methods=['POST'])
+def webhook():
+    # Only handle push events
+    if request.headers.get('X-GitHub-Event') == 'push':
+        # Run deploy script
+        result = subprocess.run(
+            ['bash', '/path/to/deploy.sh'],
+            capture_output=True,
+            text=True
+        )
+        return f"Deployed: {result.stdout}"
+
+    return "OK"
+
+
+if __name__ == '__main__':
+    app.run(port=3000)
+```
+
+This script opens up port 3000 on your server and listens on the GitHub webhook. Since this needs to be exposed to the internet, you will need to add some safeguards:
+
+- Signature validation
+- SSL
+- Tunneling
+
+#### Signature validation 
+With this validation we make sure the request comes from GitHub:
+```python
+import hmac
+import hashlib
+
+WEBHOOK_SECRET = "your-secret" # YOU SET THIS UP IN GITHUB
+
+def is_valid_signature(payload_body, signature_header):
+    if not signature_header:
+        return False
+
+    # Get expected signature
+    expected_signature = hmac.new(
+        key=WEBHOOK_SECRET.encode(),
+        msg=payload_body,
+        digestmod=hashlib.sha256
+    ).hexdigest()
+
+    # Compare with GitHub's signature
+    # GitHub sends it in format: 'sha256=<hash>'
+    return hmac.compare_digest(
+        f'sha256={expected_signature}',
+        signature_header
+    )
+```
+
+#### SSL
+Make sure the webhook server is using HTTPS. By default, GitHub allows only HTTPS requests.
+
+#### Tunneling
+As an additional protection, you can forward the traffic to your server through a tunnel. I use Cloudflare Tunnels
+as it is quick easy to set up. If you use Cloudflare as your domain registrar, it has excellent [documentation](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/) on
+how to set up tunnels with your web services
