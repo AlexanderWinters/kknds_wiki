@@ -1,0 +1,6 @@
+services:
+  kknds_wiki:
+    image: alexanderwinters/kknds_wiki
+    restart: unless-stopped
+    ports:
+      - 3033:3000
