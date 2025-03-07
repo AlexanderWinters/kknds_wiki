@@ -35,20 +35,20 @@ Restart the sshd daemon on the server and it should work.
 
 SSH Tunnels are used to exposed ports to and from connected systems.
 
-Forward Tunnels (or local port forwarding)are used to connect to a host and expose their ports that would othewise wouldn't be accessible creating access to webservers or services that are still not public. Forward tunnels are created with the -L flag. In this example, local will be the client and remote will be the server:
+Forward Tunnels (or local port forwarding) are used to connect to a host and expose their ports that would othewise wouldn't be accessible creating access to webservers or services that are still not public. Forward tunnels are created with the -L flag. In this example, local will be the client and remote will be the server:
 
 ```bash
 ssh -L local:localport:remote:remoteport user@serverip_or_domain_name
 ```
 ***
 ```bash
-ssh -L localhost:888:11.22.33.44:80 admin@11.22.33.44
+ssh -L localhost:888:111.222.333.444:80 admin@111.222.333.444
 ```
 
-Reverse tunnels (or remote port forwarding) let you access a computer inside a private network. To do this, you usually need three systems:
+Reverse tunnels (or remote port forwarding) let you access a computer inside a private network. In a usual scenario, you will have three computers:
 
 - S1: The computer inside the private network (the one you want to access).
-- S2: A public system that both you and S1 can connect to.
+- S2: A public computer that both you and S1 can connect to.
 - S3: Your computer, trying to access S1.
 
 S1 connects to S2 using SSH with the -R flag, creating a reverse tunnel. This forwards a port (like port 2222) on S2 back to S1's port 22 (SSH). Now, S3 can connect to S2 on port 2222, which forwards the connection back to S1, letting you access it as if you were inside its network.
@@ -62,13 +62,16 @@ ssh -R S2:S2port:S1:S1port S2user@S2
 #FROM THE CLIENT SYSTEM
 ssh -p S2port S1user@S2
 ```
+:::warning
+In reality, you are creating a back-door to the S1 computer, exposing it to the internet; Use at your own risk!
+:::
 
 ## SSH File Transfer
 
 This should work with MacOS and any Linux distro:
 
 ```bash
-scp <source path> <user>@<server>:<destination path>
+scp <source path> <destination path>
 ```
 
 Add the `-r` flag if it's a folder. To connect via SSH the format is `user@host:/path/to/folder/` eg.:
@@ -77,7 +80,7 @@ Add the `-r` flag if it's a folder. To connect via SSH the format is `user@host:
 scp -r /etc/systemd/destroyd takis@29.231.0.43:/opt/something
 ```
 
-You might need to add the SSH fingerprint.
+You might need to add the SSH fingerprint and the user password. If the destination doesn't allow SSH passwords, you need to install your public key to the destination.
 
 ## Network management
 
@@ -93,7 +96,7 @@ ss -tlpn | grep [port] # OR
 fuser [port]/tcp
 ```
 
-Add flag -k to fuser to kill the task as well (needs root)
+Add the flag `-k` to `fuser` to kill the task as well (needs root)
 
 ### Static IP Config (requires systemd-networkd)
 
@@ -191,11 +194,13 @@ sudo nginx -t   # Check for syntax errors
 sudo systemctl restart nginx
 ```
 
+For the docker container version, you would again create a `.conf` file and pass it to the container when creating it. 
+
 ## Firewall
 
 ### Back-end
 
-nftables is on it's way to replace iptables. For that, I decided to replace iptables with nftables already. As of now, Archlinux comes with both installed but is using iptables. Usually just stop/disabling iptables and enable/starting nftables is good enough.
+Nftables is on it's way to replace iptables. For that, I decided to replace iptables with nftables already. As of now, Archlinux comes with both installed but is using iptables. Usually just stop/disabling iptables and enable/starting nftables is good enough.
 
 To move rules from iptables to nftables you need to translate them. Iptables comes with a tool thankfully that does that. First you need to export to a file your iptables rules:
 

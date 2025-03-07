@@ -344,3 +344,38 @@ gpg --edit-key <key_public_id>
 ```
 
 and then, in the gpg prompt run: ```expire```
+
+## Background Processes and 'Hang Ups'
+
+Running processes as background in bash is done by adding the ampersand `&` symbol at the end of a command. You can investigate the active background jobs by:
+
+```bash
+jobs
+```
+You can also push an actively running command to the background by suspending it with `Ctrl + Z` and then run `bg` to activate it in the background.
+
+You can bring a background process to foreground again by:
+
+```bash
+fg
+```
+
+
+Nonetheless, most of the processes one wants to run in background are done through SSH. That means that the process should not hang up when we disconnect and continue running in the background. We do that by passing `nohup` at the beginning of the command. In addition, it is useful to also pass the standard output and errors to a file, and also not wait for any standard input. Example:
+
+```plaintext
+nohup myscript.sh >myscript.log 2>&1 </dev/null &
+#\__/             \___________/ \__/ \________/ ^
+# |                    |          |      |      |
+# |                    |          |      |  run in background
+# |                    |          |      |
+# |                    |          |   don't expect input
+# |                    |          |   
+# |                    |        redirect stderr to stdout
+# |                    |           
+# |                    redirect stdout to myscript.log
+# |
+# keep the command running 
+# no matter whether the connection is lost or you logout 
+```
+

@@ -61,7 +61,7 @@ nohup myscript.sh >myscript.log 2>&1 </dev/null &
 
 `ranger` and `lf` are tools for visual directory management. Basically a file explorer for CLI. Here are the keybindings for `ranger`:
 
-**MAIN** **BINDINGS**      
+**MAIN** **BINDINGS** 
 
 ```plaintext
  h, j, k, l    Move left, down, up or right
