@@ -123,7 +123,7 @@ Name=ethusb0
 ```
 ## Reverse Proxy
 
-We will explore reverse proxies with NGINX. NGINX is a web server that handles internet traffic at once. It's mainly used to serve websites and route internet requests.
+There are several options for reverse-proxying, but we explore here NGINX. NGINX is a web server that handles internet traffic. It's mainly used to serve websites and route internet requests.
 
 To make sure HTTPS works, we need to generate self-signed SSL certificates.
 

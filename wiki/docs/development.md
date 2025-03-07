@@ -1,11 +1,9 @@
-from webhook.app import WEBHOOK_SECRET
-
 # Development
-I will look through tools that I use for softdev. 
+Here, we will explore through tools that I use for software development. 
 
 ## Python
 
-Most of the times in python you will need to work in a virtual environment. To create one:
+Most of the time in python you will need to work in a virtual environment. To create one:
 
 ```bash
 python -m venv C:\path\to\new\virtual\environment
@@ -275,4 +273,4 @@ Make sure the webhook server is using HTTPS. By default, GitHub allows only HTTP
 #### Tunneling
 As an additional protection, you can forward the traffic to your server through a tunnel. I use Cloudflare Tunnels
 as it is quick easy to set up. If you use Cloudflare as your domain registrar, it has excellent [documentation](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/) on
-how to set up tunnels with your web services
+how to set up tunnels with your web services.
