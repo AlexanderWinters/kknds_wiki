@@ -4,3 +4,6 @@ services:
     restart: unless-stopped
     ports:
       - 3033:3000
+      - 3034:4000
+    environment:
+      - WEBHOOK_SECRET="webhook secret"
