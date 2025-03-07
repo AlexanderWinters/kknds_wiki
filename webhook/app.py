@@ -33,7 +33,7 @@ def is_valid_signature(payload_body, signature_header):
 
 def deploy():
     # Path to your deployment script
-    deploy_script = '/path/to/deploy.sh'
+    deploy_script = '/opt/kknds_wiki/webhook/deploy.sh'
 
     try:
         # Make sure the script is executable
@@ -57,7 +57,7 @@ def deploy():
 
 @app.route('/webhook', methods=['POST'])
 def webhook():
-    print("Hello")
+
     # Get X-Hub-Signature-256 header
     signature_header = request.headers.get('X-Hub-Signature-256')
 
