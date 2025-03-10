@@ -143,7 +143,7 @@ docker ps
 Go inside a container through shell:
 
 ```bash
-docker exec -it <container name> <entrypoint>
+docker exec -it "container name/id" "entrypoint"
 ```
 
 The entrypoint is basically telling the container which shell to open when entering. For most cases, it will be:
@@ -153,6 +153,7 @@ The entrypoint is basically telling the container which shell to open when enter
 /bin/zsh
 bash
 zsh
+sh
 ```
 
 Restart and recreate a container stack:
