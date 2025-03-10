@@ -88,6 +88,15 @@ git stash list
 git stash apply 0
 ```
 
+If you want to overwrite all the files with the stash, you can checkout the stash and commit:
+:::warning
+This will overwrite your uncommitted work! Use it only if you are sure what you're doing!
+:::
+```bash
+git checkout stash -- .
+git commit 
+```
+
 ## Binary Search (Bisect)
 
 Sometimes code breaks without realization, or you might want to look for something specific in your code. Git can do a binary search through your commits. Git will changes the commits for you until you find what you were looking for. Practically, let's assume there is a bug in our and you want to find it. You will first need to start a binary search with:
