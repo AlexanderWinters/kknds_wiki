@@ -164,7 +164,7 @@ docker compose up -d --force-recreate
 
 ## Building
 
-To build you need a Dockerfile. They are simple to make but you need to inspect the app you want to package. You first need to figure what environment you need and then the sequence that Docker will build the container image. For a simple react app the following Dockerfile can be used:
+To build you need a Dockerfile. They are simple to make, but you need to inspect the app you want to package. You first need to figure what environment you need and then the sequence that Docker will build the container image. For a simple react app the following Dockerfile can be used:
 
 ```dockerfile
 FROM node:23.3.0-alpine
@@ -207,3 +207,30 @@ docker buildx build --tag image:tag --platform linux/arm64,linux/amd64 --builder
 ```
 
 To publish images, you need a Docker account.
+
+## Back up and migration
+
+To move, migrate, or back up docker containers are similar processes. First commit the container's current state to an image, and then save the container image to a file. 
+```bash "title=~/backup"
+docker commit container_name image # You can find the container name with docker stats
+docker save image > image.tar
+```
+Then you need to copy the container's volumes, and volume contents. 
+You can use [ricardobranco777](https://github.com/ricardobranco777)'s bash script. This script creates a new container that mounts the volumes from the container you want to copy and archives
+them in a tarball. You can use his script to also load tarball volumes to the new destination. Make the [script](https://github.com/ricardobranco777/docker-volumes.sh) executable, and run:
+```bash
+chmod +x docker-volumes.sh # You can add the script to your bin folder to make it available system-wide
+
+# TO SAVE
+./docker-volumes.sh container_name save tarball_name
+
+# TO LOAD
+./docker-volumes.sh container_name load tarball_name
+```
+
+Make sure you have copied over to the new host both the container tar and the volume tar. Create the container
+and then run ricardobranco777's load function. 
+:::tip
+If you have a docker compose stack, make sure to run this process for all containers in the stack.
+:::
+
