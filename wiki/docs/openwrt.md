@@ -57,9 +57,25 @@ Make sure when setting up the DHCP server to lower the lease time to 1 or 2 minu
 
 Usually, releasing and renewing IPs happens on clients:
 
-```plaintext
-WINDOWS
----
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+<Tabs groupId="operating-systems">
+    <TabItem value="win" label="Windows">
+        ```plaintext
+        ipconfig /release
+        ipconfig /renew
+        ```
+    </TabItem>
+    <TabItem value="mac" label="macOS">
+        I am macOS.
+    </TabItem>
+    <TabItem value="linux" label="Linux">
+        ```plaintext
+        dhcpclient -r <interface>
+        ```
+    </TabItem>
+</Tabs>
+```plaintext title="Windows"
 ipconfig /release
 ipconfig /renew
 ```
@@ -70,7 +86,7 @@ Linux
 dhcpclient -r <interface>
 ```
 
-On mac, go to System Settings > Network > LAN Device > Details… > TCP/IP > Renew DHCP Lease.
+On Mac, go to System Settings > Network > LAN Device > Details… > TCP/IP > Renew DHCP Lease.
 
 ## Wifi/Ethernet Drivers
 

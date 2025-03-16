@@ -64,7 +64,7 @@ Edit `.bashsrc` and `.bash_profile`
 
 Add:
 
-```bash
+```bash title="~/.bashrc OR ~/.bash_profile"
 export EDITOR = [text_editor] #---this goes to bashrc
 export VISUAL = [text_editor] #---this goes to bash_profile
 ```
@@ -91,7 +91,7 @@ Zsh is the superior shell, so use this instead of bash. All plugins and customiz
 
 ### To highlight folders:
 
-```bash
+```bash title="~/.zshrc"
 if [ -x /usr/bin/dircolors ]; then
     test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
     alias ls='ls --color=auto'
@@ -136,13 +136,7 @@ You can customize the prompt to your liking.
 
 When using a device as e.g a server, suspending might not be needed or it could even be undesired. To configure system sleep states:
 
-```bash
-nano /etc/systemd/sleep.conf.d/disable-suspend.conf
-```
-
-And change the following:
-
-```bash
+```bash title="/etc/systemd/sleep.conf.d/disable-suspend.conf"
 [Sleep]
 AllowSuspend=no
 AllowHibernation=no
@@ -199,7 +193,7 @@ pacman -S swtpm
 
 Save and start the VM.
 
-In windows 11 installation, to skip internet, hit Shift + F10 to bring up the console and type OOBE\BYPASSNRO and restart. Remember to disconnect the host from the internet so no internet passes through to the guest OS.
+In Windows 11 installation, to skip internet, hit Shift + F10 to bring up the console and type OOBE\BYPASSNRO and restart. Remember to disconnect the host from the internet so no internet passes through to the guest OS.
 
 ## GUI / CLI Boot
 
@@ -313,7 +307,7 @@ To show a password:
 pass show websites/github
 ```
 
-If you want to add a url, an email, or any data to a password, you can add it as metadata on the password file:
+If you want to add an url, an email, or any data to a password, you can add it as metadata on the password file:
 
 ```bash
 pass edit websites/github
@@ -376,7 +370,7 @@ Transfer the files via `scp` to the other machine. `cd` to that folder and impor
 
 
 Finally, you will need to max the trust level of the public key for it to work properly. Edit the key, run `trust` and select `5` in the trust prompt. 
-## Background Processes and 'Hang Ups'
+## Background Processes and 'Hang-Ups'
 
 Running processes as background in bash is done by adding the ampersand `&` symbol at the end of a command. You can investigate the active background jobs by:
 

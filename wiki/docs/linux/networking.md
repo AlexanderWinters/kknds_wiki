@@ -112,8 +112,7 @@ DNS=10.1.10.1
 
 A .link file can be used to rename an interface. A useful example is to set a predictable interface name for a USB-to-Ethernet adapter based on its MAC address, as those adapters are usually given different names depending on which USB port they are plugged into.
 
-```ini
-# /etc/systemd/network/10-ethusb0.link
+```ini title="/etc/systemd/network/10-ethusb0.link"
 [Match]
 MACAddress=12:34:56:78:90:ab
 
@@ -159,7 +158,7 @@ cat server.crt server.key > server.pem
 
 You can either use an NGINX docker container or the NGINX daemon. For the daemon, you can create your configurations in `/etc/nginx/sites-available/my.conf`. Example conf for a service on localhost:8080:
 
-```plaintext
+```nginx title="/etc/nginx/sites-available/page.conf"
 server {
     listen 443 ssl;
     server_name your_domain_or_ip;
