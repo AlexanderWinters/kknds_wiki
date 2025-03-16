@@ -1,3 +1,7 @@
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+
 # OpenWRT
 ## Installing OpenWRT on x86\_64
 
@@ -29,7 +33,7 @@ In this example, I assume that the WAN interface on the VM is br-lan and that th
 IN OPENWRT
 ----------
 ifconfig # confirm the interface name
-ifconfig br-lan 192.168.122.10 
+ifconfig br-lan 192.168.122.10
 ifconfig br-lan
 ```
 
@@ -57,8 +61,6 @@ Make sure when setting up the DHCP server to lower the lease time to 1 or 2 minu
 
 Usually, releasing and renewing IPs happens on clients:
 
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
 <Tabs groupId="operating-systems">
     <TabItem value="win" label="Windows">
         ```plaintext
@@ -66,27 +68,17 @@ import TabItem from '@theme/TabItem';
         ipconfig /renew
         ```
     </TabItem>
-    <TabItem value="mac" label="macOS">
-        I am macOS.
+    <TabItem value="mac" label="macOS" default>
+        On Mac, go to ```System Settings > Network > LAN Device > Details… > TCP/IP > Renew DHCP Lease```.
     </TabItem>
     <TabItem value="linux" label="Linux">
         ```plaintext
-        dhcpclient -r <interface>
+        dhcpclient -r
         ```
     </TabItem>
 </Tabs>
-```plaintext title="Windows"
-ipconfig /release
-ipconfig /renew
-```
 
-```plaintext
-Linux
----
-dhcpclient -r <interface>
-```
 
-On Mac, go to System Settings > Network > LAN Device > Details… > TCP/IP > Renew DHCP Lease.
 
 ## Wifi/Ethernet Drivers
 
@@ -140,6 +132,11 @@ DoH: DNS over HTTPS
 
 ## 802.1q VLAN
 
-802.1q or dot1q is a standard in networking, specifically defining VLANs. It is used to segregate a local network. A switch (that supports dot1q) can split frames into two or more VLANs.
+802.1q or dot1q is a standard in networking, specifically defining VLANs.
+It is used to segregate a local network. A switch (that supports dot1q) can split frames into two or more VLANs.
 
-Openwrt can either directly split up a network if it has enough physical ports, or through a trunk port. A trunk port (or tagged port) is one physical port that can manage traffic on several VLANs. For example, a router has only one physical LAN port, and the network devices are connected to managed switch that supports 802.1q VLAN. Splitting the network happens inside the switch, and the openwrt just manages and forwards the traffic accordingly.
+Openwrt can either directly split up a network if it has enough physical ports, or through a trunk port.
+A trunk port (or tagged port) is one physical port that can manage traffic on several VLANs.
+For example, a router has only one physical LAN port, and the network devices are connected to
+managed switch that supports 802.1q VLAN. Splitting the network happens inside the switch,
+and the openwrt just manages and forwards the traffic accordingly.
