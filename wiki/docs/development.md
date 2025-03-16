@@ -217,7 +217,7 @@ and automate builds, but I will focus on two methods/tools I use for CI/CD - web
 ### Webhooks
 When it comes to updating text on a web server the simplest thing would be to use git and GitHub webhooks.
 You can use any simple web framework to create a webhook server; I use Flask, which is in python:
-```python "title=webhook.py"
+```python title="webhook.py"
 from flask import Flask, request
 import subprocess
 
@@ -251,7 +251,7 @@ This script opens up port 3000 on your server and listens on the GitHub webhook.
 
 #### Signature validation 
 With this validation we make sure the request comes from GitHub:
-```python "title=webhook.py"
+```python title="webhook.py"
 import hmac
 import hashlib
 

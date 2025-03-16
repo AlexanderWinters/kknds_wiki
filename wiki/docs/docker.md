@@ -234,3 +234,15 @@ and then run ricardobranco777's load function.
 If you have a docker compose stack, make sure to run this process for all containers in the stack.
 :::
 
+You can also archive the volumes manually. Create a new container, use the `--volume-from` flag, have the container archive the volume
+and copy it to the host.
+```bash
+docker run -rm --volumes-from container_name -v $(pwd):/backup ubuntu tar cvf /backup/backup.tar /container_volume
+```
+
+Create the actual container on the next host. We will use the again another temp container that will mount the new container's
+volume and extract the archive into the volume.
+```bash
+docker run --rm --volumes-from new_container_name -v $(pwd):/backup ubuntu bash -c "cd /container_volume && tar xvf /backup/backup.tar --strip 1"
+```
+

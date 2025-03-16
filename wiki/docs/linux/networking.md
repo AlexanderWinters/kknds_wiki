@@ -22,9 +22,7 @@ ssh-add <path/to/privatekey>
 
 (ARCH-SPECIFIC) And finally on the server, you need to enable publickey authentication and disable password to avoid brute force attacks.
 
-```bash
-micro /etc/ssh/sshd_config.d/10-force_publickey.conf
-----------------------------------------------
+```bash title="/etc/ssh/sshd_config.d/10-force_publickey.conf"
 PasswordAuthentication no
 AuthenticationMethods publickey
 ```
@@ -100,8 +98,7 @@ Add the flag `-k` to `fuser` to kill the task as well (needs root)
 
 ### Static IP Config (requires systemd-networkd)
 
-```ini
-# /etc/systemd/network/20-wired.network
+```ini title="/etc/systemd/network/20-wired.network"
 [Match]
 Name=enp1s0
 

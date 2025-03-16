@@ -23,7 +23,7 @@ resize2fs /dev/mapper/ubuntu--vg-ubuntu--lv
 
 Make sure the device paths are correct. You can check with `df -T` for your device paths. You will need root privileges.
 
-## Background Processes and 'Hang Ups'
+## Background Processes and 'Hang-Ups'
 
 **MOVE THIS DOCUMENTATION TO BE CENTRALIZED**
 
@@ -64,23 +64,23 @@ nohup myscript.sh >myscript.log 2>&1 </dev/null &
 **MAIN** **BINDINGS** 
 
 ```plaintext
- h, j, k, l    Move left, down, up or right
+h, j, k, l    Move left, down, up or right
 
 ^D or J, ^U or K 	Move a half page down, up
 
-  H, L        Move back and forward in the history
+H, L          Move back and forward in the history
 
- gg           Move to the top
+gg            Move to the top
 
- G            Move to the bottom
+G             Move to the bottom
 
 ^R            Reload everything
 
- ^L           Redraw the screen
+^L            Redraw the screen
 
- i            Display the current file in a bigger window.
+i             Display the current file in a bigger window.
 
- E            Edit the current file in $EDITOR ("nano" by default)
+E             Edit the current file in $EDITOR ("nano" by default)
 
 S             Open a shell in the current directory
 
@@ -150,11 +150,7 @@ You can network status and configurations with `netplan status`.
 
 Here is an example config for static IP:
 
-```plaintext
-/etc/netplan/01-eth0-static.yaml
----------------------------------
-```
-```yaml
+```yaml title="/etc/netplan/01-eth0-static.yaml"
 network:
   version: 2
   renderer: networkd
