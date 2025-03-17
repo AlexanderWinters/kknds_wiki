@@ -56,8 +56,8 @@ const config = {
           },
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
-          editUrl:
-            'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
+          //editUrl:
+          //  'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
           // Useful options to enforce blogging best practices
           onInlineTags: 'warn',
           onInlineAuthors: 'warn',
@@ -88,20 +88,20 @@ const config = {
             position: 'left',
             label: 'Documentation',
           },
-          //{to: '/blog', label: 'Ass', position: 'left'},
+          //{to: '/projects', label: 'Projects', position: 'left'},
           {
             href: 'https://kknds.com',
-            label: 'Back to main page',
+            label: 'kknds.com',
             position: 'right',
           },
         ],
       },
       footer: {
         style: 'dark',
-        copyright: `Copyright © ${new Date().getFullYear()} kknds.com`,
+        copyright: `Copyleft © ${new Date().getFullYear()} kknds.com`,
 
 
-        //copyright: `Copyright © ${new Date().getFullYear()} kknds.com`,
+        //copyright: `Copyleft © ${new Date().getFullYear()} kknds.com`,
       },
       prism: {
         theme: prismThemes.github,
