@@ -32,11 +32,11 @@ interface. Install Neovim and then clone the NVchad repo to your `.config` folde
 ```bash
 git clone https://github.com/NvChad/starter ~/.config/nvim && nvim
 ```
-### Commands + Shortcut + Shortcuts
-- d+d Delete Line
-- u undo
-- ctrl + d Scroll Down
-- ctrl + u Scroll Up 
+### Commands + Shortcuts
+- `d+d` Delete Line
+- `u` undo
+- `ctrl + d` Scroll Down
+- `ctrl + u` Scroll Up 
 
 
 ## GIT
