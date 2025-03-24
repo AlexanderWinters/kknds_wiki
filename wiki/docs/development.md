@@ -26,6 +26,19 @@ deactivate
 [Streamlit](https://docs.streamlit.io/) is a simple Python framework for web dev.
 There is also [Flask](https://flask.palletsprojects.com/en/stable/), [Django](https://docs.djangoproject.com/en/5.1/), and [FastAPI](https://fastapi.tiangolo.com/)
 
+## Neovim / NVchad
+Neovim is a terminal based IDE. It's pretty helpful when used in an environment with no mouse and no graphical
+interface. Install Neovim and then clone the NVchad repo to your `.config` folder:
+```bash
+git clone https://github.com/NvChad/starter ~/.config/nvim && nvim
+```
+### Commands + Shortcut + Shortcuts
+- d+d Delete Line
+- u undo
+- ctrl + d Scroll Down
+- ctrl + u Scroll Up 
+
+
 ## GIT
 :::info
 As of 2025, February the 2nd, Git has a market share of 87.53%. It's probably the most used tool in all of the tech industry (maybe even outside). Here are some advanced concepts that make working with GIT 10x better.
