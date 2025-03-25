@@ -1,5 +1,5 @@
 # Development
-Here, we will explore through tools that I use for software development. 
+Here, we will explore through tools for software development. 
 
 ## Python
 
