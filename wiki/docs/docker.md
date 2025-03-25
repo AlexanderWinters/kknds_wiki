@@ -215,9 +215,21 @@ To move, migrate, or back up docker containers are similar processes. First comm
 docker commit container_name image # You can find the container name with docker stats
 docker save image > image.tar
 ```
-Then you need to copy the container's volumes, and volume contents. 
+
+To load a committed image run:
+```
+docker image load -i image.tar
+```
+and the `docker run` the new image or use compose. Make sure to adjust any other settings.
+
+
+You might to back up the container's volumes, and volume contents. 
 You can use [ricardobranco777](https://github.com/ricardobranco777)'s bash script. This script creates a new container that mounts the volumes from the container you want to copy and archives
 them in a tarball. You can use his script to also load tarball volumes to the new destination. Make the [script](https://github.com/ricardobranco777/docker-volumes.sh) executable, and run:
+:::tip 
+You can rename the script to something catchy and copy it (or link it) to `usr/local/bin` so you can run it 
+like a normal command system-wide.
+:::
 ```bash
 chmod +x docker-volumes.sh # You can add the script to your bin folder to make it available system-wide
 
