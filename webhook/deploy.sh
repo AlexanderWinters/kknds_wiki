@@ -1,11 +1,15 @@
-#!/bin/bash
-cd /opt/live/kknds_wiki
+#!/bin/sh
+
+set -a
+source .env
+set +a
+
+cd $GIT_PATH
 
 git reset --hard
-git clean -fd
 git fetch origin
 git pull origin main
 
-cd /opt/live/kknds_wiki/wiki
+cd $WIKI_PATH
 npm install
 npm run build

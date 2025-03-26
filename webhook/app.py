@@ -1,9 +1,11 @@
 from flask import Flask, request, Response
+from dotenv import load_dotenv
 import hmac
 import hashlib
 import subprocess
 import os
 
+load_dotenv()
 app = Flask(__name__)
 
 # Replace with your secret from GitHub
@@ -33,7 +35,7 @@ def is_valid_signature(payload_body, signature_header):
 
 def deploy():
     # Path to your deployment script
-    deploy_script = '/opt/kknds_wiki/webhook/deploy.sh'
+    deploy_script = os.environ.get('DEPLOY_SCRIPT', 'deploy.sh')
 
     try:
         # Make sure the script is executable
