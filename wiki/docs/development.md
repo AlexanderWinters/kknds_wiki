@@ -45,6 +45,51 @@ git clone https://github.com/NvChad/starter ~/.config/nvim && nvim
 - `g + g` go to first line 
 - `shift + g` go to last line
 
+## Running in production
+There are several ways to deploy in production, but the simplest would probably be running the app as a service. First create a service in `etc/systemd/system/app.service`. A basic config is:
+```ini title="etc/systemd/system/app.service"
+[Unit]
+Description=App
+After=network.target
+
+[Service]
+Type=simple
+User=yourappuser
+WorkingDirectory=/path/to/your/app
+ExecStartPre=/usr/bin/npm run build
+ExecStart=/usr/bin/npm run serve
+Restart=always
+RestartSec=10
+Environment=NODE_ENV=production
+Environment=PORT=3000
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=myjsapp
+
+[Install]
+WantedBy=multi-user.target
+```
+
+- `After=network.target` ensures the network is available before starting your app
+- `Restart=always` makes sure your app restarts if it crashes
+- `Environment=NODE_ENV=production` sets the production environment
+- `User=yourappuser` runs the service as a specific user (recommended for security)
+- `WorkingDirectory` should point to your application directory
+- `ExecStartPre` Any command you want to run before deploying
+- `ExecStart` The command to start the app
+
+Then reload the system daemon, and start the service. You can also enable the service if you want it to run as the system boots:
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable app.service
+sudo systemctl start app.service
+systemctl status app.service
+```
+
+:::info
+Sometimes system services are a little weird on how they run certain environments. I recommend creating a shell script and running that as a service instead of 
+directly running nodejs or python or whatever if you can't get it to work.
+:::
 
 
 ## GIT
