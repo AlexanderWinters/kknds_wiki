@@ -43,7 +43,7 @@ def deploy():
 
         # Run the deployment script
         result = subprocess.run(
-            ['/bin/sh', deploy_script],
+            ['/bin/bash', deploy_script],
             capture_output=True,
             text=True
         )
