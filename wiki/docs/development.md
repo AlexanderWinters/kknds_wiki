@@ -88,7 +88,7 @@ systemctl status app.service
 
 :::info
 Sometimes system services are a little weird on how they run certain environments. I recommend creating a shell script and running that as a service instead of 
-directly running nodejs or python or whatever if you can't get it to work.
+directly running nodeJS or python or whatever if you can't get it to work.
 :::
 
 
