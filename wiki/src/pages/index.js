@@ -30,16 +30,17 @@ export default function NewHomePage() {
                             Explore Documentation
                         </Link>
                     </div>
-
-                    <div className={styles.disclaimer}>
-                        <p>
-                            <strong>Disclaimer:</strong> The information presented throughout this wiki is provided "as is"
-                            and without warranty of any kind, express or implied.
-                            While the information provided is believed to be correct,
-                            it may include errors or inaccuracies. Use it at your own risk!
-                        </p>
-                    </div>
                 </main>
+
+                {/* Moved disclaimer to bottom of the container */}
+                <footer className={styles.disclaimer}>
+                    <p>
+                        <strong>Disclaimer:</strong> The information presented throughout this wiki is provided "as is"
+                        and without warranty of any kind, express or implied.
+                        While the information provided is believed to be correct,
+                        it may include errors or inaccuracies. Use it at your own risk!
+                    </p>
+                </footer>
             </div>
         </Layout>
     );
