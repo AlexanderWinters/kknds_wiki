@@ -3,8 +3,9 @@ import TabItem from '@theme/TabItem';
 
 
 # OpenWRT
-## Installing OpenWRT on x86\_64
+## Installing
 
+### on x86_64
 OpenWRT has to be directly installed to a drive from another computer. At least that's what I did. Download the x86 version OpenWRT. Unzip the image:
 
 ```plaintext
@@ -21,7 +22,7 @@ Remember to check `lsblk` to see which drive to write.
 
 Then install the drive to the other computer. Boot it up and make sure it boots in UEFI, and secure boot is off. It should just boot into OpenWRT now.
 
-### Installing OpenWRT on VM (QEMU)
+###  VM (QEMU)
 
 You need to download any x86\_64 image. I'm using virt-manager as frontend. Make sure when starting the VM to select “Import existing disk image”.
 
@@ -39,7 +40,7 @@ ifconfig br-lan
 
 You can now access the OpenWRT web interface on that IP.
 
-## First setup
+#### First setup
 
 When setting up the first time, we need to configure the physicals ports of the router. Boot into the router. We need keyboard and screen since we probably still can't SSH into the machine.
 
@@ -54,6 +55,35 @@ service restart network
 ```
 
 Check if your connection is working by pinging.
+
+
+
+### ARM
+
+Same process, but you will probably need to install extra ethernet drivers depending on your platform.
+You can check the chip on the ethernet / wifi card to find the manufacturer.
+For smaller, embedded systems it's best not to install many drivers as they take space.
+For systems with a lot of resources (>2GB storage, >2GB memory, >2 cores) it doesn't matter.
+
+```plaintext title="Realtek drivers I use"
+opkg install kmod-iwlwifi
+opkg install iwlwifi-firmware
+opkg install wpad
+opkg install kmod-rtl8xxxu
+opkg install kmod-r8169
+```
+
+## Upgrading OpenWRT
+:::danger
+When upgrading, don't forget to install drivers and any DNS packages!
+:::
+
+Use the [firmware selector](https://firmware-selector.openwrt.org/) to customize your upgrade. I need the extra drivers,
+and the https-dns-proxy driver.
+
+```plaintext title="I add the following packages"
+https-dns-proxy luci-app-https-dns-proxy kmod-r8169
+```
 
 ## Releasing/Renewing IPs from DHCP
 
@@ -78,34 +108,29 @@ Usually, releasing and renewing IPs happens on clients:
     </TabItem>
 </Tabs>
 
-
-
-## Wifi/Ethernet Drivers
-
-One can always check the chip on the ethernet / wifi card to find the manufacturer. For smaller, embedded systems it's best not to install many drivers as they take space. On x86 or ARM systems with a lot of resources (>2GB storage, >2GB memory, >2 cores) it doesn't matter.
-
-```plaintext
-opkg install kmod-iwlwifi
-opkg install iwlwifi-firmware
-opkg install wpad
-opkg install kmod-rtl8xxxu
-```
-
 ## DNS
+:::tip
+If anything is broken, it's probably the DNS; start troubleshooting it first.
+:::
 
 ### Custom DNS Server
 
-Using a custom DNS for a WAN interface:
+There are two methods to use custom DNS server.
 
-**Network > Interfaces > wan interface > Edit > Advance Settings > Custom DNS**
+Using a custom DNS for a WAN interface:
+```
+Network > Interfaces > wan interface > Edit > Advance Settings > Custom DNS
+```
+You can also force this DNS server by disabling the ```Use advertised DNS by peer``` setting.
 
 DNS Forwarding:
-
-**Network > DHCP and DNS > Forwards > DNS Forwarding**
+```
+Network > DHCP and DNS > Forwards > DNS Forwarding
+```
 
 ### DNS Hijacking
 
-Configure firewall to intercept DNS traffic.
+You can configure your router to intercept all DNS traffic on your local network.
 
 Navigate to **LuCI → Network → Firewall → Port Forwards**.
 
@@ -122,13 +147,17 @@ Click **Add** and specify:
 
 Click **Save**, then **Save & Apply**.
 
-[More info](https://openwrt.org/docs/guide-user/firewall/fw3_configurations/intercept_dns)
+You can find more info [here](https://openwrt.org/docs/guide-user/firewall/fw3_configurations/intercept_dns).
 
 ### DNS Encryption
+You can encrypt your DNS traffic by sending it over HTTPS (or TLS). The traffic is still routed using UDP for transport,
+but the payload uses the HTTPS protocol. On Openwrt, you can install the ```dns-https-proxy``` and ```luci-app-dns-https-proxy```
+and start forwarding your DNS traffic HTTPS.
+:::warning
+When upgrading, remember to reinstall this package or disable before upgrading;
+it leaves dnsmasq settings that will be hard to reset without the package.
+:::
 
-DoT: DNS over TLS
-
-DoH: DNS over HTTPS
 
 ## 802.1q VLAN
 
@@ -140,3 +169,4 @@ A trunk port (or tagged port) is one physical port that can manage traffic on se
 For example, a router has only one physical LAN port, and the network devices are connected to
 managed switch that supports 802.1q VLAN. Splitting the network happens inside the switch,
 and the openwrt just manages and forwards the traffic accordingly.
+
