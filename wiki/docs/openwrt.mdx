@@ -5,8 +5,11 @@ import TabItem from '@theme/TabItem';
 # OpenWRT
 ## Installing
 
-### on x86_64
-OpenWRT has to be directly installed to a drive from another computer. At least that's what I did. Download the x86 version OpenWRT. Unzip the image:
+Best place to start is the [firmware selector](https://firmware-selector.openwrt.org/). You can pick your platform,
+version, and also add all the packages you might need together with the base packages, eg, ethernet drivers.
+
+### x86_64
+OpenWRT has to be directly installed to a drive from another computer. Download the x86 version OpenWRT. Unzip the image:
 
 ```plaintext
 gunzip openwrt_2352.img.gz
@@ -20,7 +23,7 @@ dd if=openwrt_2352.img bs=1M of=/dev/sdX
 
 Remember to check `lsblk` to see which drive to write.
 
-Then install the drive to the other computer. Boot it up and make sure it boots in UEFI, and secure boot is off. It should just boot into OpenWRT now.
+Then install the hard drive to the other computer. Boot it up and make sure it boots in UEFI, and secure boot is off. It should just boot into OpenWRT now.
 
 ###  VM (QEMU)
 
@@ -28,7 +31,7 @@ You need to download any x86\_64 image. I'm using virt-manager as frontend. Make
 
 When starting the VM, you need to change the ip address. Note down the subnet of the host's interface that QEMU is using (probably something like `virbr0`)
 
-In this example, I assume that the WAN interface on the VM is br-lan and that the host's subnet is 192.168.122.0/24.
+In this example, I assume that the LAN interface on the VM is br-lan and that the host's subnet is 192.168.122.0/24.
 
 ```plaintext
 IN OPENWRT
@@ -40,32 +43,13 @@ ifconfig br-lan
 
 You can now access the OpenWRT web interface on that IP.
 
-#### First setup
-
-When setting up the first time, we need to configure the physicals ports of the router. Boot into the router. We need keyboard and screen since we probably still can't SSH into the machine.
-
-```plaintext
-vi /etc/config/network
-```
-
-Change the ‘lan’ interface and ‘wan’ interface to use the correct physical ports, save the config, and then restart the network service:
-
-```plaintext
-service restart network
-```
-
-Check if your connection is working by pinging.
-
-
-
 ### ARM
-
-Same process, but you will probably need to install extra ethernet drivers depending on your platform.
+You can either use the process for x86_64, or the Raspberry Pi Imager. Make sure you get all the ethernet drivers for your platform.
 You can check the chip on the ethernet / wifi card to find the manufacturer.
-For smaller, embedded systems it's best not to install many drivers as they take space.
+For smaller, embedded systems it's best not to install too many drivers as they take space.
 For systems with a lot of resources (>2GB storage, >2GB memory, >2 cores) it doesn't matter.
 
-```plaintext title="Realtek drivers I use"
+```plaintext title="Drivers I use"
 opkg install kmod-iwlwifi
 opkg install iwlwifi-firmware
 opkg install wpad
@@ -78,15 +62,31 @@ opkg install kmod-r8169
 When upgrading, don't forget to install drivers and any DNS packages!
 :::
 
-Use the [firmware selector](https://firmware-selector.openwrt.org/) to customize your upgrade. I need the extra drivers,
-and the https-dns-proxy driver.
+Use the [firmware selector](https://firmware-selector.openwrt.org/) to customize your upgrade. For example, I need the extra drivers,
+the https-dns-proxy package, the cloudflare tunnel, an adblocker, and some tools to resize the filesystem.
 
-```plaintext title="I add the following packages"
-https-dns-proxy luci-app-https-dns-proxy kmod-r8169
+```plaintext title="so I add the following packages"
+https-dns-proxy luci-app-https-dns-proxy kmod-r8169 cloudflared luci-app-cloudflared adblock luci-app-adblock cfdisk resize2fs tune2fs
 ```
 
-## Releasing/Renewing IPs from DHCP
+## Managing your router
 
+### Change local IP pool
+If you want to change the default IP range of your LAN interface, edit the `network` file in your config:
+```plaintext title="/etc/config/network"
+config interface 'lan'
+	option device 'br-lan'
+	option proto 'static'
+	option ipaddr '192.168.2.3'
+	option netmask '255.255.255.0'
+	option ip6assign '60'
+```
+And then restart the network service:
+```bash
+service network restart
+```
+:::info
+When doing changes to your local IP pool, remember to release and renew the IP address on your computer(s).
 Make sure when setting up the DHCP server to lower the lease time to 1 or 2 minutes.
 
 Usually, releasing and renewing IPs happens on clients:
@@ -107,28 +107,53 @@ Usually, releasing and renewing IPs happens on clients:
         ```
     </TabItem>
 </Tabs>
+:::
 
-## DNS
+### Resizing Filesystem
+When installing OpenWRT on embedded systems (ARM) you will probably come across a problem where the OS is not utilizing all the storage on your drive.
+For my case, I run OpenWRT on a Raspberry Pi 5. Installing the OS from Rapsberry Pi Imager uses only 100MB of storage. First we need to edit the `cmdline.txt`
+in the boot folder. You need to do that right after you flash OpenWRT with Rapsberry Pi Imager, while the SD or disk is still on your other computer:
+```bash title="/boot/cmdline.txt"
+# THIS
+root=PARTUUID=661a1cf7-02
+
+# REPLACE WITH THIS
+root=/dev/mmcblk0p2
+```
+
+Boot into OpenWRT and SSH into the system:
+```bash title="Download the script and make it executable"
+wget -U "" -O expand-root.sh "https://openwrt.org/_export/code/docs/guide-user/advanced/expand_root?codeblock=0"
+chmod +x expand-root.sh
+
+# Then run the script
+./expand-root.sh
+```
+
+Reboot your system. It will probably reboot a couple of times. I also recommend having a screen hooked up (if possible) to monitor the bootstrap of the router.
+
+
+
+### DNS
 :::tip
 If anything is broken, it's probably the DNS; start troubleshooting it first.
 :::
 
-### Custom DNS Server
+#### Custom DNS Server
 
 There are two methods to use custom DNS server.
-
-Using a custom DNS for a WAN interface:
+- Using a custom DNS for a WAN interface:
 ```
 Network > Interfaces > wan interface > Edit > Advance Settings > Custom DNS
 ```
 You can also force this DNS server by disabling the ```Use advertised DNS by peer``` setting.
 
-DNS Forwarding:
+- or DNS Forwarding:
 ```
 Network > DHCP and DNS > Forwards > DNS Forwarding
 ```
 
-### DNS Hijacking
+#### DNS Hijacking
 
 You can configure your router to intercept all DNS traffic on your local network.
 
@@ -149,7 +174,7 @@ Click **Save**, then **Save & Apply**.
 
 You can find more info [here](https://openwrt.org/docs/guide-user/firewall/fw3_configurations/intercept_dns).
 
-### DNS Encryption
+#### DNS Encryption
 You can encrypt your DNS traffic by sending it over HTTPS (or TLS). The traffic is still routed using UDP for transport,
 but the payload uses the HTTPS protocol. On Openwrt, you can install the ```dns-https-proxy``` and ```luci-app-dns-https-proxy```
 and start forwarding your DNS traffic HTTPS.
@@ -159,7 +184,7 @@ it leaves dnsmasq settings that will be hard to reset without the package.
 :::
 
 
-## 802.1q VLAN
+### 802.1q VLAN
 
 802.1q or dot1q is a standard in networking, specifically defining VLANs.
 It is used to segregate a local network. A switch (that supports dot1q) can split frames into two or more VLANs.
