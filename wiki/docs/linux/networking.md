@@ -20,7 +20,7 @@ ssh-copy-id -i <path/to/publickey.pub> <user>@<host>
 ssh-add <path/to/privatekey>
 ```
 
-(ARCH-SPECIFIC) And finally on the server, you need to enable publickey authentication and disable password to avoid brute force attacks.
+And finally on the server, you need to enable publickey authentication and disable password to avoid brute force attacks.
 
 ```bash title="/etc/ssh/sshd_config.d/10-force_publickey.conf"
 PasswordAuthentication no
@@ -33,7 +33,8 @@ Restart the sshd daemon on the server and it should work.
 
 SSH Tunnels are used to exposed ports to and from connected systems.
 
-Forward Tunnels (or local port forwarding) are used to connect to a host and expose their ports that would othewise wouldn't be accessible creating access to webservers or services that are still not public. Forward tunnels are created with the -L flag. In this example, local will be the client and remote will be the server:
+### Forward Tunnels 
+(or local port forwarding) are used to connect to a host and expose their ports that would othewise wouldn't be accessible creating access to webservers or services that are still not public. Forward tunnels are created with the -L flag. In this example, local will be the client and remote will be the server:
 
 ```bash
 ssh -L local:localport:remote:remoteport user@serverip_or_domain_name
@@ -43,7 +44,11 @@ ssh -L local:localport:remote:remoteport user@serverip_or_domain_name
 ssh -L localhost:888:111.222.333.444:80 admin@111.222.333.444
 ```
 
-Reverse tunnels (or remote port forwarding) let you access a computer inside a private network. In a usual scenario, you will have three computers:
+### Reverse tunnels 
+:::danger
+For all intents and purposes, a reverse tunnel is a **back-door** to a network. Use at your own risk!
+:::
+(or remote port forwarding) let you access a computer inside a private network. In a usual scenario, you will have three computers:
 
 - S1: The computer inside the private network (the one you want to access).
 - S2: A public computer that both you and S1 can connect to.
@@ -60,9 +65,6 @@ ssh -R S2:S2port:S1:S1port S2user@S2
 #FROM THE CLIENT SYSTEM
 ssh -p S2port S1user@S2
 ```
-:::warning
-In reality, you are creating a back-door to the S1 computer, exposing it to the internet; Use at your own risk!
-:::
 
 ## SSH File Transfer
 
@@ -192,11 +194,25 @@ sudo systemctl restart nginx
 
 For the docker container version, you would again create a `.conf` file and pass it to the container when creating it. 
 
+## Reconnaissance
+:::warning
+These techniques should be used to test the security of your network **only**. Some of them, are illegal to use on networks you don't own!
+:::
+
+### Port scanning
+Port scanning is useful to test the robustness of your network, and how exposed is it to the internet.
+`nmap` is the best tool port scanning. It has excellent documentation and is easy to use. Check the port scanning techniques [documentation](https://nmap.org/book/man-port-scanning-techniques.html)
+for more details. I will go over some here:
+- `-sS` is the default scan. It connects to TCP ports without completing the TCP handshake. This makes the scan undetectable, fast, and accurate.
+- `-sU` scans UDP ports. It's recommended to also scan for UDP ports since UDP attack vectors are quick common. The problem with UDP scanning is that it's extremely slow. 
+I recommend only scanning for common ports using the `-p` flag.
+    
+
 ## Firewall
 
 ### Back-end
 
-Nftables is on it's way to replace iptables. For that, I decided to replace iptables with nftables already. As of now, Archlinux comes with both installed but is using iptables. Usually just stop/disabling iptables and enable/starting nftables is good enough.
+Nftables is on its way to replace iptables. For that, I decided to replace iptables with nftables already. As of now, Archlinux comes with both installed but is using iptables. Usually just stop/disabling iptables and enable/starting nftables is good enough.
 
 To move rules from iptables to nftables you need to translate them. Iptables comes with a tool thankfully that does that. First you need to export to a file your iptables rules:
 
