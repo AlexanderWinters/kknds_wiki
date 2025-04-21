@@ -1,5 +1,8 @@
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 # Development
-Here, we will explore through tools for software development. 
+Here, we will explore through tools for software development.
 
 ## Python
 
@@ -33,18 +36,22 @@ interface. Install Neovim and then clone the NVchad repo to your `.config` folde
 git clone https://github.com/NvChad/starter ~/.config/nvim && nvim
 ```
 ### Cheatsheet
-- `d+d` Delete Line
+- `dd` Delete Line
 - `u` undo
 - `x` delete one character
 - `w` go to the start of next word
 - `e` go to the end of the next word
-- `b` go to the end of previous word 
-- `ctrl + h/j/k/l` change tab 
+- `b` go to the end of previous word
+- `ctrl + h/j/k/l` change tab
 - `ctrl + d` Scroll Down
 - `ctrl + u` Scroll Up
-- `g + g` go to first line 
+- `g + g` go to first line
 - `shift + g` go to last line
+- `shift + a` go to the end of current line and enter insert mode
 - `:xa` save and close all windows
+- `yy` "yank" or copy line
+- `p` paste line
+- `o` add new line and enter insert mode
 
 ## Running in production
 There are several ways to deploy in production, but the simplest would probably be running the app as a service. First create a service in `etc/systemd/system/app.service`. A basic config is:
@@ -88,10 +95,9 @@ systemctl status app.service
 ```
 
 :::info
-Sometimes system services are a little weird on how they run certain environments. I recommend creating a shell script and running that as a service instead of 
+Sometimes system services are a little weird on how they run certain environments. I recommend creating a shell script and running that as a service instead of
 directly running nodeJS or python or whatever if you can't get it to work.
 :::
-
 
 ## GIT
 :::info
@@ -161,7 +167,7 @@ This will overwrite your uncommitted work! Use it only if you are sure what you'
 :::
 ```bash
 git checkout stash -- .
-git commit 
+git commit
 ```
 
 ### Binary Search (Bisect)
@@ -175,7 +181,7 @@ git bisect start
 Then you will need to point to GIT to the latest bad commit, and the latest good commit:
 
 ```bash
-git bisect bad # The current commit is the bad 
+git bisect bad # The current commit is the bad
 git bisect good vd32401d # Commit vd32401d is the known good
 ```
 
@@ -279,7 +285,7 @@ The mirror in not readable so it can be deleted after pushing.
 
 CI/CD stands for continuous intergration and continuous development. It's a set of practices and tools
 used to automate building, testing, and deploying. There are several tools out there that help coordinate
-and automate builds, but I will focus on two methods/tools I use for CI/CD - webhooks, and Jenkins. 
+and automate builds, but I will focus on two methods/tools I use for CI/CD - webhooks, and Jenkins.
 
 ### Webhooks
 When it comes to updating text on a web server the simplest thing would be to use git and GitHub webhooks.
@@ -316,7 +322,7 @@ This script opens up port 3000 on your server and listens on the GitHub webhook.
 - SSL
 - Tunneling
 
-#### Signature validation 
+#### Signature validation
 With this validation we make sure the request comes from GitHub:
 ```python title="webhook.py"
 import hmac
@@ -347,6 +353,113 @@ def is_valid_signature(payload_body, signature_header):
 Make sure the webhook server is using HTTPS. By default, GitHub allows only HTTPS requests.
 
 #### Tunneling
-As an additional protection, you can forward the traffic to your server through a tunnel. I use Cloudflare Tunnels
-as it is quick easy to set up. If you use Cloudflare as your domain registrar, it has excellent [documentation](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/) on
+As additional protection, you can forward the traffic to your server through a tunnel. I use Cloudflare Tunnels
+as it is quick and easy to set up. If you use Cloudflare as your domain registrar, it has excellent [documentation](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/) on
 how to set up tunnels with your web services.
+
+## Minio
+Minio is an open-source alternative to AWS S3 object storage. Great for backend development and sometimes can be used as a database.
+In my case, I'm using Minio for backups. Minio offers bare-metal deployments, but Docker is superior, so we will explore that.
+
+First you need to decide if you are using a single drive or multiple.
+If you're going for multi-drive, you need to define them in the `.env` and mount them in the compose file. Make sure the drivers are mounted on your OS,
+and they are added to your `fstab` file so they auto-mount on boot.
+
+Set up a `.env` file:
+<Tabs groupId="Deployments">
+    <TabItem value="Single Drive" label="Single Drive">
+        ```plaintext title=".env"
+        # Login credentials
+        MINIO_ROOT_USER=user
+        MINIO_ROOT_PASSWORD=password
+
+        # Set the storage volume or path inside the container.
+        MINIO_VOLUMES="/mnt/data"
+
+        MINIO_OPTS="--console-address :9001"
+        ```
+    </TabItem>
+    <TabItem value="Multi Drive" label="Multi Drive">
+        ```plaintext title=".env"
+        # Login credentials
+        MINIO_ROOT_USER=user
+        MINIO_ROOT_PASSWORD=password
+
+        # For multi-drive deployments, create a separate path for each drive.
+        # You can use expansion notation to set up sequential paths.
+        MINIO_VOLUMES="/mnt/data-{1...4}"
+
+        MINIO_OPTS="--console-address :9001"
+        ```
+    </TabItem>
+</Tabs>
+
+Copy and run the compose file; adjust if needed:
+
+<Tabs groupId="Deployments">
+    <TabItem value="Single Drive" label="Single Drive">
+        ```yaml title="docker-compose.yml"
+        services:
+        minio:
+        image: minio/minio
+        container_name: minio
+        ports:
+        - 9000:9000
+        - 9001:9001
+        restart: unless-stopped
+        environment:
+        - MINIO_ROOT_USER=$MINIO_ROOT_USER
+        - MINIO_ROOT_PASSWORD=$MINIO_ROOT_PASSWORD
+        - MINIO_CONFIG_ENV_FILE=/etc/config.env
+        volumes:
+        - ./data:/mnt/data
+        - ./.env:/etc/config.env
+        command: minio server --console-address ":9001"
+        ```
+    </TabItem>
+    <TabItem value="Multi Drive" label="Multi Drive">
+        ```yaml title="docker-compose.yml"
+        services:
+        minio:
+        image: minio/minio
+        container_name: minio
+        ports:
+        - 9000:9000
+        - 9001:9001
+        restart: unless-stopped
+        environment:
+        - MINIO_ROOT_USER=$MINIO_ROOT_USER
+        - MINIO_ROOT_PASSWORD=$MINIO_ROOT_PASSWORD
+        - MINIO_CONFIG_ENV_FILE=/etc/config.env
+        volumes:
+        - ./drive1:/mnt/data-1
+        - ./drive2:/mnt/data-2
+        - ./drive3:/mnt/data-3
+        - ./drive4:/mnt/data-4
+        - ./.env:/etc/config.env
+        command: minio server --console-address ":9001"
+        ```
+    </TabItem>
+
+</Tabs>
+
+:::info
+It is recommended to use NVME or SSD drives for production (databases, dictionaries), and use HDD only for cold storage (backups, media)
+; try not to mix and match drives if you can.
+They also recommend that you use XFS as your filesystem.
+
+I am using a single drive deployment on a HDD drive that is formatted with BTRFS and nothing has exploded yet.
+:::
+
+Check the logs of the new container and make sure it's not boot looping. Go to `localhost:9001` or `YOUR-SERVER-IP:9001`
+and login. Make your first bucket. Make sure to create access keys for your buckets as well;
+you will need them to use the API.
+
+In my case, the tool I'm using - [restic](https://github.com/restic/restic/tree/master) -
+gets the keys from environmental variables:
+```plaintext
+export AWS_ACCESS_KEY_ID=<YOUR-MINIO-ACCESS-KEY-ID>
+export AWS_SECRET_ACCESS_KEY=<YOUR-MINIO-SECRET-ACCESS-KEY>
+```
+
+and uses them to connect to my bucket: `s3:http://localhost:9000/bucket`

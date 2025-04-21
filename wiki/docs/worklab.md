@@ -1,5 +1,7 @@
 # Worklab
 
+I will document software I've used in my carrier. 
+
 ## Gitea
 Gitea is a backend git server, similar to github and gitlab but open source. I run it on a docker container so portability is rather straight forward but does require some setting up when restoring. 
 
