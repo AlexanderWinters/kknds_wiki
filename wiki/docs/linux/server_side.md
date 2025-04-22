@@ -1,4 +1,53 @@
 # Server Side
+
+Tools and things I use for backend and server side management. 
+
+## Restic
+Restic is a super simple backup tool. It's a CLI only tool, but it's so famous that there are a bunch of GUI forks. 
+It also has a very wide backend support. I use [S3 storage](./../development#minio) for my set up.
+
+First, I need to export the following variables to the OS (since this is super sensitive data, disable your shell history):
+```bash
+unset HISTFILE
+export AWS_ACCESS_KEY_ID=<MINIO_ACCESS_KEY>
+export AWS_SECRET_ACCESS_KEY=<MINIO_SECRET_KEY>
+export RESTIC_REPOSITORY="s3:http://your_minio_ip:1234/bucket"
+export RESTIC_PASSWORD="your_restic_password"
+```
+
+The access key and secret you get from Minio. The repo is the URL to the Minio bucket. Initialize the repo:
+```bash
+restic init 
+```
+
+If everything is correct, you should receive in stdout a message that the repo is created. To backup, run `restic backup`
+and the path you want to back up:
+```bash
+restic backup /path/to/backup
+```
+
+You can then check your snapshots with:
+```bash
+restic snapshots
+```
+:::tip
+If your machine blows up, you can access the restic repo by just using the S3 creds, url, and your repo password. 
+Keep your password somewhere accessible. 
+:::
+
+### Scheduled backups and change detection
+Restic automatically detects if there are changes in the backed-up files. 
+You can also skip making a new snapshot adding the flag `--skip-if-unchanged`.
+
+Additionally, if you want to turn off change detection,
+you can add the flag `--force`.
+
+Restic does not have a scheduler, but if you set up the environmental variables, you can run cron jobs. 
+Check [crontab guru](https://crontab.guru/) to generate your own retentions:
+```plaintext title="crontab -e"
+0 0 1 * * restic backup /path/to/backup --skip-if-unchanged
+```
+
 ## Mounting Full Disk
 
 When installing ubuntu server, sometimes, it might skip to allocating the full disk the partition (probably if you add the boot drive to a LVM group). You can extend the filesystem by:
