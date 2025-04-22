@@ -1,3 +1,3 @@
-My wiki page developed with Docusaurus. 
+My wiki page developed with [Docusaurus](https://docusaurus.io/). 
 
-Check it out at [https://wiki.kknds.com](https://wiki.kknds.com)
+Check it out at [wiki.kknds.com](https://wiki.kknds.com)
