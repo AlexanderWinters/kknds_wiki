@@ -162,9 +162,14 @@ Restart and recreate a container stack:
 docker compose up -d --force-recreate
 ```
 
+Start a docker compose stack but only detach when all healthchecks pass (you need to implement healthchecks):
+```bash
+docker compose up -d --wait
+```
+
 ## Building
 
-To build you need a Dockerfile. They are simple to make, but you need to inspect the app you want to package. You first need to figure what environment you need and then the sequence that Docker will build the container image. For a simple react app the following Dockerfile can be used:
+To build, you need a Dockerfile. They are simple to make, but you need to inspect the app you want to package. You first need to figure what environment you need and then the sequence that Docker will build the container image. For a simple react app the following Dockerfile can be used:
 
 ```dockerfile
 FROM node:23.3.0-alpine

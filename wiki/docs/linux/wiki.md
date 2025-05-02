@@ -12,8 +12,8 @@ To get started, just rip the .iso and boot. Make sure all the settings in BIOS f
 pacman -S archinstall
 ```
 
-And then run archinstall. This is the closest you will get to a guided OS installation with Arch.
-Alternatively you can manually install with the official installation guide.
+And then run `archinstall`. This is the closest you will get to a guided OS installation with Arch.
+Alternatively, you can manually install with the official installation guide.
 
 To update:
 
@@ -36,15 +36,7 @@ uname -a
 
 If the kernels don't match, you need to reboot.
 
-## Useful Commands
-
-Delete all empty folders:
-
-```bash
-find . -empty -type d -delete
-```
-
-## Packages to get started (check arch-wiki too)
+### Packages to get started (check arch-wiki too)
 
 * **cronie / fcron**: Cron jobs, for automating stuff or running scripts every given time. To add/edit/remove jobs:
 * **crontabs -e**
@@ -58,7 +50,18 @@ find . -empty -type d -delete
 * **wireshark-cli**: Packet sniffer. Use with termshark.
 * **lf**: 'list-files' ... basically ranger.
 
-## Default console text editor
+## Useful Commands
+
+Delete all empty folders:
+
+```bash
+find . -empty -type d -delete
+```
+## ZSH
+
+Zsh is the superior shell, so use this instead of bash. All plugins and customizations for zsh happen in the `.zshrc` file in your home directory.
+
+### Default console text editor
 
 Edit `.bashsrc` and `.bash_profile`
 
@@ -71,7 +74,7 @@ export VISUAL = [text_editor] #---this goes to bash_profile
 
 If using different shell usually it's the same files to the corresponding shell, eg, for zsh it's `.zshrc` and `.zprofile`
 
-## Change Default Shell
+### Change Default Shell
 
 List all available shells:
 
@@ -84,10 +87,6 @@ Change:
 ```bash
 chsh -s /path/to/shell
 ```
-
-## ZSH
-
-Zsh is the superior shell, so use this instead of bash. All plugins and customizations for zsh happen in the `.zshrc` file in your home directory.
 
 ### To highlight folders:
 
@@ -134,7 +133,7 @@ You can customize the prompt to your liking.
 
 ## Disabling system suspend
 
-When using a device as e.g a server, suspending might not be needed or it could even be undesired. To configure system sleep states:
+When using a device as e.g. a server, suspending might not be needed or it could even be undesired. To configure system sleep states:
 
 ```bash title="/etc/systemd/sleep.conf.d/disable-suspend.conf"
 [Sleep]
@@ -146,7 +145,7 @@ AllowHybridSleep=no
 
 ## VMs
 
-First you need the QEMU server, which is the backend for the VMs, the libvirt manager, and optionally the cockpit web interface.
+First, you need the QEMU server, which is the backend for the VMs, the libvirt manager, and optionally the cockpit web interface.
 
 ```bash
 pacman -S qemu-full libvirt virt-manager cockpit cockpit-machines
@@ -183,7 +182,7 @@ pacman -S swtpm
 3. Start a new VM from local files.
 4. Edit memory to at least 4GB.
 5. Edit storage to at least 100GB.
-6. Edit configuration file to enable TPM. Under add:
+6. Edit the configuration file to enable TPM. Append:
 
 ```xml
 <tpm model="tpm-crb">
@@ -193,7 +192,7 @@ pacman -S swtpm
 
 Save and start the VM.
 
-In Windows 11 installation, to skip internet, hit Shift + F10 to bring up the console and type OOBE\BYPASSNRO and restart. Remember to disconnect the host from the internet so no internet passes through to the guest OS.
+In Windows 11 installation, to skip the internet connection requirement, hit Shift + F10 to bring up the console and type OOBE\BYPASSNRO and restart. Remember to disconnect the host from the internet so no internet passes through to the guest OS.
 
 ## GUI / CLI Boot
 
@@ -211,7 +210,7 @@ systemctl set-default graphical.target
 
 ## Generate Keys
 
-You can use the openssl command to generate key together with rand. Optionally, you can pass as flags the format you want and the number of digits.
+You can use the openssl command to generate keys together with rand. Optionally, you can pass as flags the format you want and the number of digits.
 
 For base64 and 60 digits key:
 
@@ -227,7 +226,7 @@ openssl rand -hex 32
 
 ## Faillock
 
-After 3 attempts of sudo the accounts is locked. Check first the failed attempts with faillock and make sure it's actually you. Then you can reset the account fails with:
+After 3 attempts of sudo, the account is locked. Check first the failed attempts with `faillock` and make sure it's actually you. Then you can reset the account fails with:
 
 ```bash
 faillock --user <user> --reset
@@ -265,7 +264,7 @@ tar -xzf example_archive.tar.gz -C /path/to/extraction
 
 ## Password Store
 
-pass is a unix password manager. It stores the passwords in a gpg file and uses git to sync.
+`pass` is an unix password manager. It stores the passwords in a gpg file and uses git to sync.
 
 You need to generate a gpg key to initialize pass:
 
@@ -287,7 +286,7 @@ To add an existing password:
 pass insert github
 ```
 
-Where github is any password you want to add. pass is using normal files to save your passwords so you can nest them in folders.
+Where "github" is any password you want to add. `pass` is using normal files to save your passwords so you can nest them in folders.
 
 ```bash
 pass insert websites/github
@@ -309,9 +308,7 @@ pass show websites/github
 
 If you want to add an url, an email, or any data to a password, you can add it as metadata on the password file:
 
-```bash
-pass edit websites/github
-------------------------------------
+```bash title="pass edit websites/github"
 random_password
 email: hello@world.com
 URL: https://eelslap.com/

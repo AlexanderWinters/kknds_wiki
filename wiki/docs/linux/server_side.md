@@ -14,6 +14,7 @@ export AWS_SECRET_ACCESS_KEY=<MINIO_SECRET_KEY>
 export RESTIC_REPOSITORY="s3:http://your_minio_ip:1234/bucket"
 export RESTIC_PASSWORD="your_restic_password"
 ```
+Or to make variables permanent, add them to your `.zshrc` or `.bashrc` file. 
 
 The access key and secret you get from Minio. The repo is the URL to the Minio bucket. Initialize the repo:
 ```bash
@@ -37,15 +38,31 @@ Keep your password somewhere accessible.
 
 ### Scheduled backups and change detection
 Restic automatically detects if there are changes in the backed-up files. 
-You can also skip making a new snapshot adding the flag `--skip-if-unchanged`.
+You can also skip making a new snapshot adding the flag `--skip-if-unchanged` (**This seems to be deprecated now!**).
 
 Additionally, if you want to turn off change detection,
 you can add the flag `--force`.
 
 Restic does not have a scheduler, but if you set up the environmental variables, you can run cron jobs. 
-Check [crontab guru](https://crontab.guru/) to generate your own retentions:
+Check [crontab guru](https://crontab.guru/) to generate your own retentions. 
+
+I recommend making scripts that cron runs instead of running restic commands directly. 
+You can also add a cleanup policy in your script if you don't need to keep all snapshots. Make sure the script is executable:
+```bash title="~/backup.sh"
+#!/bin/zsh
+
+#Backup job
+restic backup /path/to/backup
+
+#Cleanup job
+restic forget --keep-within-weekly 5d
+
+```
+```bash
+chmod +x ~/backup.sh
+```
 ```plaintext title="crontab -e"
-0 0 1 * * restic backup /path/to/backup --skip-if-unchanged
+0 0 1 * * ~/backup.sh
 ```
 
 ## Mounting Full Disk

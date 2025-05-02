@@ -31,10 +31,11 @@ Restart the sshd daemon on the server and it should work.
 
 ## SSH Tunneling
 
-SSH Tunnels are used to exposed ports to and from connected systems.
+SSH Tunnels are used to expose ports to and from connected systems.
 
 ### Forward Tunnels 
-(or local port forwarding) are used to connect to a host and expose their ports that would othewise wouldn't be accessible creating access to webservers or services that are still not public. Forward tunnels are created with the -L flag. In this example, local will be the client and remote will be the server:
+(or local port forwarding) are used to connect to a host and expose their ports that wouldn't be accessible, creating access to webservers or services that are still not public.
+Forward tunnels are created with the -L flag. In this example, local will be the client and remote will be the server:
 
 ```bash
 ssh -L local:localport:remote:remoteport user@serverip_or_domain_name
@@ -46,9 +47,9 @@ ssh -L localhost:888:111.222.333.444:80 admin@111.222.333.444
 
 ### Reverse tunnels 
 :::danger
-For all intents and purposes, a reverse tunnel is a **back-door** to a network. Use at your own risk!
+A reverse tunnel is a **back-door** to a network. Use at your own risk!
 :::
-(or remote port forwarding) let you access a computer inside a private network. In a usual scenario, you will have three computers:
+(or remote port forwarding) lets you access a computer inside a private network, circumventing firewalls. In a usual scenario, you will have three computers:
 
 - S1: The computer inside the private network (the one you want to access).
 - S2: A public computer that both you and S1 can connect to.
@@ -68,7 +69,7 @@ ssh -p S2port S1user@S2
 
 ## SSH File Transfer
 
-This should work with MacOS and any Linux distro:
+This should work with macOS and any Linux distro:
 
 ```bash
 scp <source path> <destination path>
@@ -84,7 +85,7 @@ You might need to add the SSH fingerprint and the user password. If the destinat
 
 ## Network management
 
-`systemd-networkd` - the system daemon running the network configuration. Is needed for ipvlans for docker.
+`systemd-networkd` - The system daemon running the network configuration. It's needed for ipvlans for docker.
 
 `networkctl list` - show interfaces
 
@@ -112,7 +113,7 @@ DNS=10.1.10.1
 
 ### Renaming an interface (requires systemd-networkd)
 
-A .link file can be used to rename an interface. A useful example is to set a predictable interface name for a USB-to-Ethernet adapter based on its MAC address, as those adapters are usually given different names depending on which USB port they are plugged into.
+A `.link` file can be used to rename an interface. A useful example is to set a predictable interface name for a USB-to-Ethernet adapter based on its MAC address, as those adapters are usually given different names depending on which USB port they are plugged into.
 
 ```ini title="/etc/systemd/network/10-ethusb0.link"
 [Match]
@@ -200,7 +201,7 @@ These techniques should be used to test the security of your network **only**. S
 :::
 
 ### Port scanning
-Port scanning is useful to test the robustness of your network, and how exposed is it to the internet.
+Port scanning is useful to test the robustness of your network and how exposed it is to the internet.
 `nmap` is the best tool port scanning. It has excellent documentation and is easy to use. Check the port scanning techniques [documentation](https://nmap.org/book/man-port-scanning-techniques.html)
 for more details. I will go over some here:
 - `-sS` is the default scan. It connects to TCP ports without completing the TCP handshake. This makes the scan undetectable, fast, and accurate.
@@ -214,7 +215,7 @@ I recommend only scanning for common ports using the `-p` flag.
 
 Nftables is on its way to replace iptables. For that, I decided to replace iptables with nftables already. As of now, Archlinux comes with both installed but is using iptables. Usually just stop/disabling iptables and enable/starting nftables is good enough.
 
-To move rules from iptables to nftables you need to translate them. Iptables comes with a tool thankfully that does that. First you need to export to a file your iptables rules:
+To move rules from iptables to nftables you need to translate them. Iptables come with a tool that does that. First, you need to export to a file your iptables rules:
 
 ```bash
 iptables-save > tables.txt
@@ -232,7 +233,7 @@ And then just import the rules to nft:
 nft -f ruleset.nft
 ```
 
-Nftables already comes with some basic rules. To clear the ruleset:
+Nftables already come with some basic rules. To clear the ruleset:
 
 ```bash
 nft flush ruleset
