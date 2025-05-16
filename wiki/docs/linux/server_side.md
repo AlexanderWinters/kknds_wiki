@@ -64,6 +64,28 @@ chmod +x ~/backup.sh
 ```plaintext title="crontab -e"
 0 0 1 * * ~/backup.sh
 ```
+## Remote Access
+If you want to access your backend servers, and/or your services through your home network, you will need either a tunneling service or a VPN server. 
+
+### Tunneling Services / Token Servers
+Tunneling services are great because they encrypt your traffic and usually include SSL certificates. You can also use them as reverse proxies for your services. 
+The downsides of tunnels, they are usually paid services, and you need to trust the service with your unencrypted traffic. 
+I use Cloudflare as my domain registrar, which also offers tunneling. It works great for me because I can have my services publicly accessible
+without exposing my network to the internet.
+
+### VPN Server
+The alternative is setting up your own VPN server. My current setup is a Raspberry Pi 3 Model B+ and [PiVPN](https://www.pivpn.io/). PiVPN is a plug-n-play setup for turning your Rpi to a VPN Server. 
+You can then use either OpenVPN or Wireguard as backend. I went with Wireguard since it's a little more modern and faster. 
+
+Installing is pretty straight forward if you have internet access:
+```bash
+curl -L https://install.pivpn.io | bash
+```
+
+I highly recommend using a domain name and [DDNS](/docs/openwrt#ddns-with-cloudflare) 
+so you don't have to fetch your public IP everytime it rotates by your ISP. You check if it's up by `ping` or `traceroute` your domain name.
+
+On your router, you will need to forward all traffic from UDP port 51820 to your Pi.
 
 ## Mounting Full Disk
 
@@ -88,91 +110,6 @@ resize2fs /dev/mapper/ubuntu--vg-ubuntu--lv
 ```
 
 Make sure the device paths are correct. You can check with `df -T` for your device paths. You will need root privileges.
-
-## Ranger / LF Keybindings
-
-`ranger` and `lf` are tools for visual directory management. Basically a file explorer for CLI. Here are the keybindings for `ranger`:
-
-**MAIN** **BINDINGS** 
-
-```plaintext
-h, j, k, l    Move left, down, up or right
-
-^D or J, ^U or K 	Move a half page down, up
-
-H, L          Move back and forward in the history
-
-gg            Move to the top
-
-G             Move to the bottom
-
-^R            Reload everything
-
-^L            Redraw the screen
-
-i             Display the current file in a bigger window.
-
-E             Edit the current file in $EDITOR ("nano" by default)
-
-S             Open a shell in the current directory
-
-?             Opens this man page
-
-<octal>=, +<who><what>, -<who><what>    Change the permissions of the selection.  
-For example, "777=" is equivalent
-to "chmod 777 %s", "+ar" does "chmod a+r %s", "-ow" does "chmod o-w %s" etc.
-
-yy            Copy (yank) the selection, like pressing Ctrl+C in modern GUI programs.
-
-dd            Cut the selection, like pressing Ctrl+X in modern GUI programs.
-
-pp            Paste the files which were previously copied or cut, like pressing Ctrl+V in
-                     modern GUI programs.
-
- po           Paste the copied/cut files, overwriting existing files.
-
-mX            Create a bookmark with the name X
-
-`X            Move to the bookmark with the name X
-
-n             Find the next file.  By default, this gets you to the newest file in the
- directory, but if you search something using the keys /, cm, ct, ...,
- it will get you to the next found entry.
-
-N             Find the previous file.
-
-oX            Change the sort method (like in mutt)
-
-zX            Change settings.  See the settings section for a list of settings and their hotkey.
-
-u?            Universal undo-key.  Depending on the key that you press after "u", it
-                     either restores closed tabs (uq), removes tags (ut), clears the copy/cut
-                     buffer (ud), starts the reversed visual mode (uV) or clears the selection
-                     (uv).
-
-f             Quickly navigate by entering a part of the filename.
-
-Space         Mark a file.
-
-v             Toggle the mark-status of all files
-
-V             Starts the visual mode, which selects all files between the starting point
-                     and the cursor until you press ESC.  To unselect files in the same way, use
-                     "uV".
-
-/             Search for files in the current directory.
-
-:             Open the console.
-
-Alt-N         Open a tab. N has to be a number from 0 to 9. If the tab doesn't exist yet,
-                     it will be created.
-
-gn, ^N        Create a new tab.
-
-gt, gT        Go to the next or previous tab. You can also use TAB and SHIFT+TAB instead.
-
-gc, ^W        Close the current tab.  The last tab cannot be closed this way.
-```
 
 ## Network management with Netplan
 

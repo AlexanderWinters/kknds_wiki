@@ -132,14 +132,23 @@ chmod +x expand-root.sh
 
 Reboot your system. It will probably reboot a couple of times. I also recommend having a screen hooked up (if possible) to monitor the bootstrap of the router.
 
+### 802.1q VLAN
 
+802.1q or dot1q is a standard in networking, specifically defining VLANs.
+It is used to segregate a local network. A switch (that supports dot1q) can split frames into two or more VLANs.
 
-### DNS
+Openwrt can either directly split up a network if it has enough physical ports, or through a trunk port.
+A trunk port (or tagged port) is one physical port that can manage traffic on several VLANs.
+For example, a router has only one physical LAN port, and the network devices are connected to
+managed switch that supports 802.1q VLAN. Splitting the network happens inside the switch,
+and the openwrt just manages and forwards the traffic accordingly.
+
+## DNS
 :::tip
 If anything is broken, it's probably the DNS; start troubleshooting it first.
 :::
 
-#### Custom DNS Server
+### Custom DNS Server
 
 There are two methods to use custom DNS server.
 - Using a custom DNS for a WAN interface:
@@ -153,7 +162,7 @@ You can also force this DNS server by disabling the ```Use advertised DNS by pee
 Network > DHCP and DNS > Forwards > DNS Forwarding
 ```
 
-#### DNS Hijacking
+### DNS Hijacking
 
 You can configure your router to intercept all DNS traffic on your local network.
 
@@ -174,7 +183,7 @@ Click **Save**, then **Save & Apply**.
 
 You can find more info [here](https://openwrt.org/docs/guide-user/firewall/fw3_configurations/intercept_dns).
 
-#### DNS Encryption
+### DNS Encryption
 You can encrypt your DNS traffic by sending it over HTTPS (or TLS). The traffic is still routed using UDP for transport,
 but the payload uses the HTTPS protocol. On Openwrt, you can install the ```dns-https-proxy``` and ```luci-app-dns-https-proxy```
 and start forwarding your DNS traffic HTTPS.
@@ -183,15 +192,31 @@ When upgrading, remember to reinstall this package or disable before upgrading;
 it leaves dnsmasq settings that will be hard to reset without the package.
 :::
 
+### DDNS with Cloudflare
+Dynanmic DNS helps you keep track of your IP and hook it to a domain name automatically. You will either need to use a service,
+or find a domain registrar that has an API. I use Cloudflare, which has an API.
 
-### 802.1q VLAN
+Go to your Cloudflare account page, Manage Account, Account API Tokens. Create and new custom API token,
+add the Permissions "Zone" - "Zone" - "Read" and "Zone" - "DNS" - "Write". Include the domain name that will hook to your IP, save and keep the token.
 
-802.1q or dot1q is a standard in networking, specifically defining VLANs.
-It is used to segregate a local network. A switch (that supports dot1q) can split frames into two or more VLANs.
+You will need the following packages installed in OpenWRT:
+```bash
+ddns-scripts
+ddns-scripts-cloudflare
+ddns-scripts-services
+luci-app-ddns
+```
 
-Openwrt can either directly split up a network if it has enough physical ports, or through a trunk port.
-A trunk port (or tagged port) is one physical port that can manage traffic on several VLANs.
-For example, a router has only one physical LAN port, and the network devices are connected to
-managed switch that supports 802.1q VLAN. Splitting the network happens inside the switch,
-and the openwrt just manages and forwards the traffic accordingly.
+Refresh LuCi and go to Services > DDNS. Edit myddns_ipv4 and select from the DDNS service providers `cloudflare.com-v4`.
+Set the rest as:
+- **Enabled** - true
+- **Lookup Hostname** - yourdomain.com (for a subdomain: sub.yourdomain.com)
+- **Domain** - yourdomain.com (for a subdomain: sub@yourdomain.com)
+- **Username** - Bearer
+- **Password** - YOUR_CLOUDFLARE_API_TOKEN
+- **Use HTTP Secure** - true
+- **Path to CA Certificate** - /etc/ssl/certs
+
+Save everything and refresh. Unfortunately, your ISP rotates your public IP automatically, so there is no way to test this other than waiting for the next rotation.
+For me, sometimes I get a new public IP if I restart the router or if I unplug and then plug again the WAN interface.
 
