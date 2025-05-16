@@ -27,6 +27,23 @@
   --ifm-color-primary-lighter: #ec4444;
   --ifm-color-primary-lightest: #f66161;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+
+  --docsearch-primary-color: var(--ifm-color-primary) !important;
+  --docsearch-highlight-color: var(--ifm-color-primary) !important;
+  --docsearch-container-background: rgba(37, 36, 35, 0.8) !important;
+  --docsearch-modal-background: #252423 !important;
+  --docsearch-searchbox-background: #333231 !important;
+  --docsearch-searchbox-focus-background: #3a3938 !important;
+  --docsearch-hit-background: #333231 !important;
+  --docsearch-hit-active-color: #ffffff !important;
+  --docsearch-hit-shadow: none !important;
+  --docsearch-footer-background: #252423 !important;
+  --docsearch-key-gradient: linear-gradient(
+          -26.5deg,
+          #333231 0%,
+          #3a3938 100%
+  ) !important;
+
 }
 
 .navbar {
