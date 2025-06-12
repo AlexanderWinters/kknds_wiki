@@ -216,6 +216,88 @@ And then run a rebase with the `--autosquash` flag so Git will handle all the sq
 ```bash
 git rebase -i --autosquash
 ```
+### Git LFS
+Git LFS is an extension that replaces large files with text pointers inside Git, while storing the file contents on a remote server. This improves repository performance when working with large binary files.
+
+#### Initializing Git LFS
+To start using Git LFS in your repository:
+``` bash
+# Initialize Git LFS in your repository
+git lfs install
+```
+
+This sets up Git LFS for your user account. The `git lfs install` command only needs to be run once per user account.
+
+#### Tracking Files with Git LFS
+Specify which file types should be tracked with Git LFS:
+``` bash
+# Track files by extension
+git lfs track "*.psd"
+git lfs track "*.zip"
+git lfs track "*.pdf"
+
+# Track specific files
+git lfs track "large-file.bin"
+
+# Track files in a specific directory
+git lfs track "images/*.png"
+```
+
+After tracking files, commit the `.gitattributes` file which stores these tracking patterns:
+``` bash
+git add .gitattributes
+git commit -m "Configure Git LFS tracking"
+```
+Then add and commit your large files as usual:
+``` bash
+git add large-file.bin
+git commit -m "Add large binary file"
+git push
+```
+
+#### Migrating Existing Files to Git LFS
+If you need to move files that are already in your Git history to LFS:
+``` bash
+# 1. First, track the file types you want to migrate
+git lfs track "*.psd"
+git add .gitattributes
+git commit -m "Track PSD files with Git LFS"
+
+# 2. Use the Git LFS migrate command
+git lfs migrate import --include="*.psd" --everything
+```
+The `--everything` flag migrates all branches and tags. For more selective migration:
+``` bash
+# Migrate only specific branch
+git lfs migrate import --include="*.psd" --include-ref=main
+
+# Limit migration to recent commits (last 10)
+git lfs migrate import --include="*.psd" --everything --exclude-ref="refs/remotes/*" --above=1kb
+```
+After migration, force push all updated refs to update the remote repository:
+``` bash
+git push --force
+```
+#### Verifying LFS Status
+``` bash
+# List all tracked patterns
+git lfs track
+
+# Show all LFS files in the repo
+git lfs ls-files
+```
+#### Common Operations
+``` bash
+# Pull LFS content
+git lfs pull
+
+# Fetch without checking out
+git lfs fetch
+
+# Check LFS status
+git lfs status
+```
+
 
 ### Remove files from git without deleting
 
