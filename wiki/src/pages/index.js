@@ -32,7 +32,6 @@ export default function NewHomePage() {
                     </div>
                 </main>
 
-                {/* Moved disclaimer to bottom of the container */}
                 <footer className={styles.disclaimer}>
                     <p>
                         <strong>Disclaimer:</strong> The information presented throughout this wiki is provided "as is"

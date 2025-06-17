@@ -75,14 +75,12 @@ const config = {
     ({
       colorMode: {
         defaultMode: 'dark',
-        disableSwitch: true, // This prevents users from switching themes
-        respectPrefersColorScheme: false, // Ignore user's system preferences
+        disableSwitch: true, 
+        respectPrefersColorScheme: false, 
       },
       algolia: {
-        // The application ID provided by Algolia
         appId: 'KQXDB177YS',
 
-        // Public API key: it is safe to commit it
         apiKey: 'fa975d870f70787ba63ff1069b337c92',
 
         indexName: 'kknds',
@@ -111,7 +109,6 @@ const config = {
         //... other Algolia params
       },
 
-      // Replace with your project's social card
       image: 'img/docusaurus-social-card.jpg',
       navbar: {
         title: 'KKNDS Wiki',
@@ -126,7 +123,6 @@ const config = {
             position: 'left',
             label: 'Documentation',
           },
-          //{to: '/projects', label: 'Projects', position: 'left'},
           {
             href: 'https://kknds.com',
             label: 'kknds.com',
