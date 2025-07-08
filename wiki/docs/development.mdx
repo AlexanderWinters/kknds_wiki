@@ -363,6 +363,20 @@ git push --mirror  <dest-repo-url>
 
 The mirror in not readable so it can be deleted after pushing.
 
+### Reuse Recorded Resolution
+This is a setting in git that allows git to remember how you resolved a merge conflict and will now use that resolution if it detects a similar
+merge conflict:
+```bash
+git config --global rerere.enabled true
+```
+
+### Optimizing Repository
+Git has a new feature to optimize a repo. It can help reduce the time of Git actions, and reduce the size of the repo.
+To enable repo optimization, run inside the repo:
+```bash
+git maintenance start
+```
+
 ## CI/CD
 
 CI/CD stands for continuous intergration and continuous development. It's a set of practices and tools
