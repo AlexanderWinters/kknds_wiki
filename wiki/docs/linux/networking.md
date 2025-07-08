@@ -89,6 +89,13 @@ You might need to add the SSH fingerprint and the user password. If the destinat
 
 `networkctl list` - show interfaces
 
+### Windows port forward
+When using WSL and you want to access the service from the public IP, you need to port forward the WSL interface to 0.0.0.0.
+Run this as admin in the Windows Terminal:
+```bash
+netsh interface portproxy add v4tov4 listenport=<PORT> listenaddress=0.0.0.0 connectport=<PORT> connectaddress=<WSL_IP>
+```
+
 ### Force close ports
 
 ```bash
