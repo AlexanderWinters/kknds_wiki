@@ -143,6 +143,66 @@ For example, a router has only one physical LAN port, and the network devices ar
 managed switch that supports 802.1q VLAN. Splitting the network happens inside the switch,
 and the openwrt just manages and forwards the traffic accordingly.
 
+### SNMP
+
+SNMP (Simple Network Monitor Protocol) is a standard for monitoring your router. It is used to collect information about network devices, specifically the router. There are several packages you can use, but the documentation is rather sparse.
+I found out that ```mini-snmpd``` is the simplest and fastest to setup. Download and install the package:
+
+```bash
+opkg update
+opkg install mini_snmpd
+```
+
+Then edit the ```/etc/config/mini_snmpd``` configuration file:
+```bash title="/etc/config/mini_config"
+config mini_snmpd 'default'
+	option enabled 1
+	option ipv6 0
+	# Verbose flag given to mini_snmpd, extra verbose is only possible with compile time config flags
+	option debug 0
+	# Turn on community authentication (snmp agent must use community name)
+	option auth 0
+	option community 'public' #This doubles as a password, so if your snmp server is public make this more secure
+	option description 'My Router'
+	option contact 'me  <me@hello.com>'
+	option location 'Sweden'
+	# to listen on all interfaces you need to set option listen_interface ''
+	option listen_interface ''
+	#option udp_port '161'
+	#option tcp_port '161'
+	#option vendor_oid ''
+	option mib_timeout 1
+	# enable basic disk usage statistics on specified mountpoint
+	list disks '/overlay'
+	list disks '/tmp'
+	# enable basic network statistics on specified interface
+	# 4 interfaces maximum per instance, as named in /etc/config/network and luci
+	# not physical device names
+	list interfaces 'lan'
+	list interfaces 'wan'
+```
+
+Make sure everything is correct, and then start the service:
+```bash
+/etc/init.d/mini_snmpd start
+```
+
+To check that the service is actually working, use ```snmpwalk``` from another machine to inspect the snmp data. You might need to install ```snmp``` package first:
+
+```bash
+apt install snmp
+pacman -S net-snmp
+dnf install net-snmp net-snmp-utils
+```
+And then run:
+```bash
+snmpwalk -v 2c -c public 192.168.0.1 # Replace with your router IP address
+```
+
+You can then use the values to monitor and track your router. Check out [this](/docs/home#monitor-network-traffic) on how to monitor your network traffic from Home Assistant. It will be useful to also install a MIB file.
+This will show what each OID corresponds to, and you don't have to guess what each number is.
+
+
 ## DNS
 :::tip
 If anything is broken, it's probably the DNS; start troubleshooting it first.
