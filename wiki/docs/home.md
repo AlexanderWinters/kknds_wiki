@@ -1,24 +1,17 @@
-# Home automation
+# Home Automation
 
 I will explore how to set up home automations, both in hardware and software. I mainly use ESPHome and Home Assistant.
 
-## Custom Dimmer
-
-The dimmer I created doesn't not connect directly to the house's main power; instead, it connects to Home Assistant via WiFi and manages the lights with a rotary encoder. The hardware I use is: 
-- A [Waveshare ESP32 C6 Zero](https://www.waveshare.com/wiki/ESP32-C6-Zero)
-- A [KY040 rotary encoder](https://www.amazon.se/roterande-kodmodul-graders-kodbrytare-potentiometer/dp/B0D5D23Y6V?crid=3883SLFOVV7DV&dib=eyJ2IjoiMSJ9.e8BC75T-RHyemKR-0FvQNx96RfkAFaM3EUYFrur0J5F-BLCfQ4VAzfZ5SWXxdTYpvW38W48kyvxlsYhwM46Aob4b1852FJnuFvEjNXvy596FNwnxehb-VUypCbH04GSs43Y7Ryia9J8R8RaoHmcWvb7lcpiFWmlLVJXx-pAyy4WfP1VQzOU2wvvWRhP51OzySUsMKznetHONu5wKrUoqWTv-kU_oEIW7SweIfp3EAxPM-C2uDTWyKKdmPe0UvqxkvQuoUAEj17uEt-TcRCG03lgYF4CWO1tC6mZVXuAhnEk.EbpMKo65Xqv48n8IdtuHqSq_8h0miyFuOdkjfLD4DFM&dib_tag=se&keywords=ky040&qid=1753954885&sprefix=ky040%2Caps%2C93&sr=8-3)
-
-
-
-
-
+## Backups and Restore
+I had to migrate my home server a couple of times, but luckily, it's super easy with Home Assistant.
+Simply create a backup from the UI, deploy the new server, and restore the backup.
 
 ## Monitor Network Traffic
 
 There might be several tools available for traffic monitoring, but the most common and applicable to most routers is [SNMP](/docs/openwrt#snmp). 
 I use an OpenWRT router, but most routers, especially ones with custom firmware, support SNMP. Install and configure SNMP on your router.
 Then on edit your ```configuration.yaml```. This file is accessible by different means, depending on your Home Assistant deployment:
-- For Docker, you will need to mount it to the container, and the edit from there.
+- For Docker, you will need to mount it to the container and the edit from there.
 - For Home Assistant OS, you can edit it directly from the UI, just install the "Terminal & SSH" add-on.
 
 In my setup, I monitor the current traffic on both the WAN and LAN interfaces (Kbps), the volume of the current traffic(GB/day), and the volume of the total traffic(GB all time).
@@ -112,4 +105,134 @@ template:
       state_class: measurement
 ```
 
+## Projects
+Custom hardware and software projects to implement for tracking, monitoring, and controlling home automation.
+
+### Custom Dimmer
+
+The dimmer I created does not connect directly to the house's main power; instead, it connects to Home Assistant via WiFi and manages the lights with a rotary encoder. The hardware I use is:
+- [Waveshare ESP32 C6 Zero](https://www.waveshare.com/wiki/ESP32-C6-Zero)
+- [KY040 rotary encoder](https://www.amazon.se/roterande-kodmodul-graders-kodbrytare-potentiometer/dp/B0D5D23Y6V?crid=3883SLFOVV7DV&dib=eyJ2IjoiMSJ9.e8BC75T-RHyemKR-0FvQNx96RfkAFaM3EUYFrur0J5F-BLCfQ4VAzfZ5SWXxdTYpvW38W48kyvxlsYhwM46Aob4b1852FJnuFvEjNXvy596FNwnxehb-VUypCbH04GSs43Y7Ryia9J8R8RaoHmcWvb7lcpiFWmlLVJXx-pAyy4WfP1VQzOU2wvvWRhP51OzySUsMKznetHONu5wKrUoqWTv-kU_oEIW7SweIfp3EAxPM-C2uDTWyKKdmPe0UvqxkvQuoUAEj17uEt-TcRCG03lgYF4CWO1tC6mZVXuAhnEk.EbpMKo65Xqv48n8IdtuHqSq_8h0miyFuOdkjfLD4DFM&dib_tag=se&keywords=ky040&qid=1753954885&sprefix=ky040%2Caps%2C93&sr=8-3)
+
+Install the ESPHome Builder add-on and add a new device. The microcontroller I used is not yet fully supported by ESPHome, so we have to explicitly write all the details of the controller. 
+
+```yaml
+esphome:
+  name: living-room-dimmer
+  friendly_name: living room dimmer
+
+#Make sure to use the correct specifications of your controller
+esp32:                                      
+  board: esp32-c6-devkitc-1
+  variant: esp32c6
+  flash_size: 4MB
+  framework:
+    platform_version: 6.6.0
+    type: esp-idf
+    version: 5.2.1
+    sdkconfig_options:
+      CONFIG_ESPTOOLPY_FLASHSIZE_4MB: y
+
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: "encrypted_key"
+
+ota:
+  - platform: esphome
+    password: "password"
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  
+sensor:
+  - platform: rotary_encoder
+    name: Dimmer
+    pin_a: 3
+    pin_b: 4
+    min_value: 0
+    max_value: 9
+    resolution: 1
+
+binary_sensor:
+  - platform: gpio
+    pin:
+      number: 5
+      mode: INPUT_PULLUP
+      inverted: True
+    name: "Dimmer Switch"
+    on_press: 
+      then:
+        - logger.log: "dimmer pressed"
+```
+
+- ```esp32```: The microcontroller used.
+- ```logger```: Enable logging.
+- ```api```: Enable Home Assistant API.
+- ```ota```: Enable Over-the-Air updates.
+- ```wifi```: WiFi settings.
+- ```sensor```: The rotary encoder used to control the dimmer. 
+- ```binary_sensor```: The KY040 has a switch as well that I use as a light switch. It can also be used to reset the dimmer steps. 
+
+:::tip
+Use your router's 2.4 GHz channel for the controller so it has a longer and more stable connection.
+:::
+
+If it's the first time flashing the controller, you will need to use [ESPHome Web](https://web.esphome.io/), which is basically a JavaScript that flashes your controller.
+ESPHome Web only runs on Chromium browsers. Download the config file from ESPHome Builder (on your home assistant installation) and flash it using ESPHome Web.
+
+Once installed, check the logs to make sure the controller is working. You can now use OTA to update it from now on, no need for ESPHome Web.
+
+Once everything is working, we need to create a new automation to control the dimmer. I find it easier to just write the automation in YAML: 
+```yaml 
+alias: Living Room Dimmer
+description: Adjust the brightness of the living room
+triggers:
+  - entity_id: sensor.esp_dimmer_dimmer
+    trigger: state
+conditions: []
+actions:
+  - data:
+      entity_id: light.master
+
+#The formula is 255 (max brightness) / 10 (total steps). Adjust the steps as needed.
+      brightness: "{{ (trigger.to_state.state | int) * 25.5 | round | int }}" 
+    action: light.turn_on
+mode: single
+```
+
+We can also use exponential scaling to make the dimmer 'feel' more 'natural'.
+```yaml
+brightness: {{ (trigger.to_state.state | int / 9) ** 2 * 255) | round | int }}
+```
+
+This effectively creates the following adjustment curve:
+`|-|--|----|------|--------|----------|-----------|`
+
+You can also adjust the exponent to adjust the curve.
+
+I also add an automation to controller the switch and use it as a light toggle: 
+```yaml
+alias: "Dimmer Switch"
+description: "Click the dimmer switch to toggle the light"
+triggers:
+  - trigger: state
+    entity_id:
+      - binary_sensor.esp_remote_dimmer_dimmer_switch
+    from: "off"
+    to: "on"
+conditions: []
+actions:
+  - action: light.toggle
+    metadata: {}
+    data: {}
+    target:
+      entity_id: light.spotlights
+mode: single
+```
 
