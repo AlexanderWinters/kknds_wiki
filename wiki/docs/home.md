@@ -373,5 +373,26 @@ mode: single
 You can probably also control the lights with a single automation and using toggles instead. The issue is that the sensor is not directly connected to the light so they might get out of sync and flip the functionality.
 :::
 
+### Weather Station (WIP)
 
+Electronics Parts:
+- UV Sensor
+- DHT22 Sensor (temp and humidity)
+- Wind Speed sensor 
+- Wind direction sensor
+- Rain Gauge (automatically draining)
+- Air Quality Sensor
+- Soil Moisture Sensor
+- LoRa OR Long Range ZWave
 
+Covers and mechanical parts:
+- Gill Shield (for temp sensor)
+- Wind Vane (Wind direction)
+- Anemometer (Wind speed)
+- 
+
+Tips:
+- Make it maximum 3m long. 
+
+It is important to consider lightning strikes. The weather station will probably be on an open field. Since it's metal construction, it will probably attract lightning.
+Make sure it's **under 3 meters**. If it's longer, you will probably need to install a lightning rod with a professional. 

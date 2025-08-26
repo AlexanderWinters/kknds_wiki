@@ -280,3 +280,20 @@ Set the rest as:
 Save everything and refresh. Unfortunately, your ISP rotates your public IP automatically, so there is no way to test this other than waiting for the next rotation.
 For me, sometimes I get a new public IP if I restart the router or if I unplug and then plug again the WAN interface.
 
+## Firewall
+
+### Drop WAN ping-requests
+
+If you have services behind a VPN or a tunnel, then pinging your home network is not needed which means we can block it.
+OpenWRT already has a firewall rule to allow ping requests from the WAN interface, so simply editing the rule and changing from `ACCEPT` to `DROP`.
+In UCI:
+```bash
+uci add firewall rule
+uci set firewall.@rule[-1].name='Drop-Ping'
+uci set firewall.@rule[-1].src='wan'
+uci set firewall.@rule[-1].proto='icmp'
+uci set firewall.@rule[-1].icmp_type='echo-request'
+uci set firewall.@rule[-1].target='DROP'
+uci commit firewall
+service firewall restart
+```
