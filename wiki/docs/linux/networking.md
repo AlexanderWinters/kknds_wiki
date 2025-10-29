@@ -130,10 +130,21 @@ MACAddress=12:34:56:78:90:ab
 Description=USB to Ethernet Adapter
 Name=ethusb0
 ```
-## Reverse Proxy
+## NGINX
 
-There are several options for reverse-proxying, but we explore here NGINX. NGINX is a web server that handles internet traffic. It's mainly used to serve websites and route internet requests.
+I recommend installing nginx and certbot to fully control your webservices.
+NGINX is a webserver and certbot is used to provision certificates for domain names. 
 
+```bash
+sudo apt install nginx certbot
+
+```
+:::info
+There is a chance that `certbot` does not include the nginx plugin. You can simply then install ```sudo apt install python3-certbot-nginx```.
+:::
+
+
+### Self signed certificates
 To make sure HTTPS works, we need to generate self-signed SSL certificates.
 
 1\. create a 2048-bit RSA private key:
@@ -165,8 +176,10 @@ You can optionally combine the key and certificate into one file; sometimes usef
 ```plaintext
 cat server.crt server.key > server.pem
 ```
+### Basic setup
+Create a new config in `etc/nginx/sites-available`.
 
-You can either use an NGINX docker container or the NGINX daemon. For the daemon, you can create your configurations in `/etc/nginx/sites-available/my.conf`. Example conf for a service on localhost:8080:
+You will need a server block which defines the domain name, ports, and certificates:
 
 ```nginx title="/etc/nginx/sites-available/page.conf"
 server {
@@ -175,7 +188,25 @@ server {
 
     ssl_certificate /path/to/your/fullchain.pem;
     ssl_certificate_key /path/to/your/privkey.pem;
+}
+```
+- `listen` defines the port that nginx will listen and expose.
+- `server_name` is your domain name. You will need to make sure from your DNS provider that the domain name is pointing to the correct server.
+- `ssl_certifate` Path to your certificate.
+- `ssl_certificate_key` Path to your certificate key (usually comes together with the cert).
 
+The next step is your location block. This defines what service is published from your server. If you are serving a static website you can simply define the root folder and the `index.html`.
+```bash
+location / {
+    root /path/to/www/;
+    index index.html;
+}
+```
+
+
+If your app or service is NOT a static website, or you have a backend server, you will need to pass HTTP headers to your application and create a proxy to your service, effectively creating reverse proxy: 
+
+```nginx
     location / {
         proxy_pass http://localhost:8080;
         proxy_set_header Host $host;
@@ -184,20 +215,50 @@ server {
         proxy_set_header X-Forwarded-Proto https;
     }
 }
+```
 
+Lastly, we need to make sure that HTTP redirects to HTTPS. Returning the code `301` tells your browser that all traffic going to `http://app` is permanently redirected to `https://app`. 
+
+```bash
 server {
     listen 80;
     server_name your_domain_or_ip;
     return 301 https://$host$request_uri;
 }
 ```
+So our full `.conf` should look like this: 
+```NGINX
+server {
+    listen 443 ssl;
+    server_name example.com;
 
-Replace `your_domain_or_ip` and the correct paths to the SSL certificates and keys. Enable then the new nginx conf:
+    ssl_certificate /path/to/cert/fullchain.pem;
+    ssl_certificate_key /path/to/cert/privkey.pem;
+    
+    # We assume here that you have an app deployed in a container
+    # thus we need to set our location as a reverse proxy
+    location / {
+        proxy_pass http://localhost:8134;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto https;
+
+    }
+}
+
+server {
+    listen 80;
+    server_name example.com;
+    return 301 https://$host$request_uri;
+}
+```
+Once the config is ready, we need to enable it and make sure it's correct:
 
 ```plaintext
-sudo ln -s /etc/nginx/sites-available/jira.conf /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/page.conf /etc/nginx/sites-enabled/
 sudo nginx -t   # Check for syntax errors
-sudo systemctl restart nginx
+sudo systemctl reload nginx.service
 ```
 
 For the docker container version, you would again create a `.conf` file and pass it to the container when creating it. 
