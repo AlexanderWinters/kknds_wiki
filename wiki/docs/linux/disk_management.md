@@ -49,13 +49,16 @@ You need to figure out what file system you want. Usually btrfs or ext4 is best 
 
 ```bash
 mkfs.ext4 /dev/sda1
+# OR
+mkfs.btrfs /dev/sda1
 ```
 
 You might need to mount the drive.
 
 ## RAID
 
-You need to download mdadm.
+### Arch
+Download mdadm:
 
 ```bash
 pacman -S mdadm
@@ -63,7 +66,7 @@ pacman -S mdadm
 
 Make sure you have partitioned the drives you want to use and the partition type is Linux RAID (it might work on empty space as well).
 
-Also make sure the drives are unmounted.
+Also, make sure the drives are unmounted.
 
 ```bash
 umount <device1>
@@ -115,6 +118,25 @@ sudo update-initramfs -u
 ```
 
 You can also add the array to fstab so it automatically mounts on startup.
+
+### Debian (probably more)
+`Btrfs` comes with almost all linux distros, but make sure it's there, and make sure your disks are formatted in btrfs. 
+
+- Mount the first drive: 
+```bash
+mount /dev/sda1 /data
+```
+- Add the second drive with the `btrfs` utility. 
+```bash
+btrfs device add /dev/sdb1 /data -f
+# -f flag or --force to add the second device 
+```
+
+- Create RAID1
+```bash
+btrfs balance start -dconvert=raid1 -mconvert=raid1 /data
+```
+
 
 ## Mounting
 

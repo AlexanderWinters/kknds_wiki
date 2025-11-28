@@ -263,6 +263,19 @@ sudo systemctl reload nginx.service
 
 For the docker container version, you would again create a `.conf` file and pass it to the container when creating it. 
 
+### Authentication with nginx
+Nginx offers basic authentication. It uses a simple browser prompt for a user and password.
+
+:::warning 
+This type of authentication does not encrypt any data and is a simple prompt that sits infront of your app.  
+:::
+
+Create a user/password pair using a hashing utility, eg `htpasswd` included in the `apache2-utils`. Save the pair somewhere, ideally in a hidden file: 
+```bash
+sudo htpasswd -c /etc/hashes/.htpasswd my_user # Flag -c to create the file 
+
+```
+
 ## Reconnaissance
 :::warning
 These techniques should be used to test the security of your network **only**. Some of them, are illegal to use on networks you don't own!
