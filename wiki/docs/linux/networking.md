@@ -322,11 +322,96 @@ nft flush ruleset
 
 ### Front-end
 
-These are the firewalls that support nftables:
+#### Firewalld
+Firewalld is a front-end firewall that filters traffic to your endpoint and it's pretty straight forward.
+It uses `nftables` by default. 
 
-- ufw
-- firewalld
-- nft-blackhole
+Install and make sure that SSH is allowed:
+```bash
+apt install firewalld # use your favorite package manager here; firewalld is pretty big and widespread daemon.
+
+firewalld-cmd --add-service=ssh --permanent
+
+# Start and enable the service
+systemctl enable --now firewalld
+```
+
+`firewalld` is dynamic, meaning that it doesn't need to restart to apply rules, and uses concepts like zones and services. 
+
+Zones are trust-levels with a set of rules on how to filter traffic depending on where it enters.
+While not correct, it is easier to consider zones as your interfaces on your servers. 
+A web server is probably accessible from the internet, meaning it needs to be in a public zone with tighter rules. 
+A VPN server is a backdoor to your network you probably don't want anything to block traffic, so it lives in a trusted zone. 
+
+The build-in zone trust model of `firewalld` (from least to most trusted):
+- **Drop** - all network packets are dropped, no reply.
+- **Block** - all network connections are rejected. 
+- **Public** - For public hosts, or servers on the internet. Only selected incoming connections are accepted.
+- **External** - For masqueraded networks, but you don't trust other hosts. This is used on routers.
+- **DMZ** - Demilitarized zone; rules are loser.
+- **Work** - For networks not on the internet, but with a lot of hosts.
+- **Home** - For networks not on the internet, and with a few hosts. 
+- **Internal** - For system administration networks.
+- **Trusted** - All network connections are accepted. 
+
+Services are an abstraction for ports. eg:
+```bash
+ssh = tcp/22
+http = tcp/80
+dns = udp/53 + tcp/53
+```
+
+#### Fail2ban
+
+`fail2ban` works alongside a firewall. It simply bans IPs that fail to log into any service defined by the admin.
+It reads `logs` using predefined and admin defined `filters` to find failed login attempts, and then applies `actions`.
+Configurations are called `jails` and are admin defined. 
+
+Install:
+```bash
+apt install fail2ban # or your favorite package manager
+```
+
+`fail2ban` enables and starts itself. On some distros, it also enables SSH banning, so I would recommend looking into this so you don't get locked out, but ideally, you're using SSH keys. 
+
+To create a filter: 
+```bash title="/etc/fail2ban/filter.d/my_filter.conf"
+[Definition]
+failregex=.*Failed login attempt for user .* from ip address <HOST>.*
+ignoreregex=
+```
+
+It uses regex to recognize patterns in logs. The `<HOST>` variable is specific to `fail2ban` and is used to find IP addresses.
+We will then use this filter to create a jail and ban that IP. 
+
+You can also use the `ignoreregex` if there is a pattern you want to ignore. 
+
+Let's assume you have a web service running on 80, 443 with a login screen, and the logs live inside `/var/logs/web-app.log`. 
+
+Let's create a jail: 
+```bash title="/etc/fail2ban/jail.d/web-app.conf"
+[webapp]
+
+enabled = true
+filter = my_filter
+logpath = /var/logs/web-app.log
+maxretry = 3
+findtime = 10m
+bantime = 1h
+port = http,https
+```
+
+- **enabled**: enable this jail
+- **filter**: which filter to use
+- **logpath**: path to logs
+- **maxretry**: failed attempts before banning IP
+- **findtime**: time period of failed attempts
+- **bantime**: Ban period
+- **port**: Ports to listen to. 
+
+
+
+
 
 
 ## CIDR Cheatsheet
