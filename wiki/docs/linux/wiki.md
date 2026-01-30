@@ -314,6 +314,37 @@ email: hello@world.com
 URL: https://eelslap.com/
 ```
 
+### Moving password-store to another machine
+
+Before we move our keys and passwords, we need to save our gpg keys and import them to the new machine (see below).
+
+Once done, find the UID of the gpg keys:
+```bash
+gpg -k 
+
+```
+
+Initialize password-store with that ID:
+```bash
+pass init your_uid
+
+```
+
+Clean up the contents of the `.password-store` folder, and clone your git repo in there. 
+```bash
+git clone git@git:your_repo .password-store
+
+```
+
+You should now be able to use your passwords on your new machine. Make sure that everything works bytrying access a password. 
+```bash
+pass 
+<YOUR PASSWORDS>
+
+pass show folder/password
+
+```
+
 ## Cryptography
 
 Generating a new gpg key:
