@@ -238,16 +238,16 @@ Archivers are used to put multiple files into a single file. Compressors are use
 
 Tar flags:
 
--c Create a new archive. We use this flag whenever we need to create a new archive.
--z Use gzip compression. When we specify this flag, it means that archive will be created using gzip compression.
--v Provide verbose output. Providing the -v flag shows details of the files compressed.
--f Archive file name. Archive file names are mapped using the -f flag.
--x Extract from a compressed file. We use this flag when files need to be extracted from an archive.
-
+- `-c` Create a new archive. We use this flag whenever we need to create a new archive.
+- `-z` Use gzip compression. When we specify this flag, it means that archive will be created using gzip compression.
+- `-v` Provide verbose output. Providing the -v flag shows details of the files compressed.
+- `-f` Archive file name. Archive file names are mapped using the -f flag.
+- `-x` Extract from a compressed file. We use this flag when files need to be extracted from an archive.
+- `-p` preserve permissions and attributes.
 Creating an archive and compressing it:
 
 ```bash
-tar -czf example_archive.tar.gz /path/to/files
+tar -cpvzf example_archive.tar.gz /path/to/files
 ```
 
 Extracting an archive (remember the -z flag if it's compressed):
