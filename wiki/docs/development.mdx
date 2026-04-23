@@ -453,9 +453,9 @@ As additional protection, you can forward the traffic to your server through a t
 as it is quick and easy to set up. If you use Cloudflare as your domain registrar, it has excellent [documentation](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/) on
 how to set up tunnels with your web services.
 
-## Minio
-Minio is an open-source alternative to AWS S3 object storage. Great for backend development and sometimes can be used as a database.
-In my case, I'm using Minio for backups. Minio offers bare-metal deployments, but Docker is superior, so we will explore that.
+## Minio - DEPRECATED; REPLACE WITH rustfs
+~~Minio is an open-source alternative to AWS S3 object storage. Great for backend development and sometimes can be used as a database.
+In my case, I'm using Minio for backups. Minio offers bare-metal deployments, but Docker is superior, so we will explore that.~~
 
 First you need to decide if you are using a single drive or multiple.
 If you're going for multi-drive, you need to define them in the `.env` and mount them in the compose file. Make sure the drivers are mounted on your OS,
