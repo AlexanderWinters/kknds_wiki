@@ -56,6 +56,10 @@ mkfs.btrfs /dev/sda1
 You might need to mount the drive.
 
 ## RAID
+:::info  
+I highly recommend using [ZFS](./disk_management#zfs) instead
+:::
+
 
 ### Arch
 Download mdadm:
@@ -201,3 +205,52 @@ You can also check free space with:
 ```bash
 df -h
 ```
+
+## ZFS
+
+ZFS is an open source storage platform. Helps with preventing data corruption (very cool if you don't have ECC), sets up redandancy, and much more.
+
+### Installation
+
+For debian you need the `contrib` library.
+```bash
+apt install zfs-dkms zfsutils-linux
+```
+
+Other flavors of Linux you only need `zfsutils-linux`
+
+### RAIDZ1
+Most common setup for me is raidz1, which corresponds to RAID 5. For this setup we need at least 3 disks, 2 will carry data, and 1 will be for parity, meaning our tolerance is 1 drive. 
+
+Find the names of your drivers with `lsblk` and prepare your disks by wiping them: 
+```bash
+wipefs -a /dev/sd1 /dev/sd2 /dev/sd3
+```
+
+Then we create a disk pool:
+```bash
+zpool create -f -o ashift=12 mypool raidz1 /dev/sd1 /dev/sd2 /dev/sd3
+```
+- `-f` Forces use of vdevs
+- `-o ashift=12` increase the smallest chunk size to 2^12 (4096)
+- `mypool` name and path to your pool. This will also create `/mypool`
+- `raidz1` the technique or method used to combine the drives.
+    - `stripe` RAID 0 
+    - `mirror` RAID 1 
+    - `raidz1` RAID 5 (one drive parity)
+    - `raidz2` RAID 6 (two drive parity)
+    - `raidz3` three drive parity
+
+It is also recommend to enable a compression algorithm on a pool:
+```bash 
+zfs set compression=lz4 mypool
+```
+LZ4 is a lossless compression algorithm that helps the CPU write faster, with the benefit of also saving space. [More info](https://github.com/lz4/lz4)
+
+You can check the status of your pool: 
+```bash
+zpool status
+```
+
+
+
